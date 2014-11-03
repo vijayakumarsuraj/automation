@@ -1,0 +1,26 @@
+/** DataTables styles. */
+
+.dataTables_info {
+    margin-top: 5px;
+    font-size: 80%;
+    margin-bottom: 15px;
+}
+.dataTables_paginate {
+    margin-top: 5px;
+    font-size: 80%;
+    margin-bottom: 15px;
+}
+.dataTables_filter {
+    margin-top: -25px;
+    margin-right: 5px;
+    font-size: 80%;
+    font-weight: bold;
+}
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
+    border: 1px solid #a2a2a2;
+    border-radius: 2px;
+    padding: 1px 3px;
+    margin: 0 2px;
+}
+.dataTables_wrapper {
+}

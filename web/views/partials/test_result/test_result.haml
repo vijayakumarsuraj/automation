@@ -1,0 +1,48 @@
+-# Renders a generic test result row.
+
+-# test_result - local variable provided by the calling template.
+-# show_run_name - local variable provided by the calling template.
+-# show_test_name - local variable provided by the calling template.
+-# selectable - local variable provided by the calling template.
+
+-# The config version
+- run_result = test_result.run_result
+- test = test_result.test
+- test_name = test.test_name
+- run_name = run_result.run_name
+- run_config = run_result.run_config
+- config_name = run_config.config_name
+- application_name = run_config.application.application_name
+- result = entity_result(test_result)
+- unless defined? selectable then selectable = false end
+
+%tr{class: "tests_table data #{result_style(result)}"}
+  %td
+    - args = {locals: {entity: test_result}}
+    = scoped_partial('result_icon', application_name, args)
+  %td
+    - if selectable
+      - id = test_result.id
+      - checkbox_name = run_name
+      %input{type: 'checkbox', name: checkbox_name, value: id}
+  - if show_run_name
+    %td
+      %a{href: link('run', run_name, 'index.html')}= run_name
+  - elsif show_test_name
+    %td
+      %a{href: link('config', application_name, config_name, 'test', test_name, 'history.html')}
+        - args = {locals: {test: test}}
+        = scoped_partial('test/test_name', application_name, args)
+      = '--'
+      = "#{test_result_test_type(test_result)}Test"
+  - else
+    %td
+  - if entity_status(run_result) == Automation::Status::Complete
+    %td{id: "links_#{run_name}_#{test_name}"}
+      - unless result.eql?(Automation::Result::Unknown) && test_result.end_date_time.nil?
+        - args = {locals: {test_result: test_result}}
+        = scoped_partial('test_result/links', application_name, args)
+  - else
+    %td
+  %td
+    = entity_date_time_summary(test_result)

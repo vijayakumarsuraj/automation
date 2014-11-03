@@ -1,0 +1,137 @@
+/** Contains styles for the content of the report. */
+@import "table.css";
+
+/** Container for the report's content. */
+div.content {
+    clear: both;
+    position: relative;
+}
+
+/* Align images according to the font of the containing element. */
+img {
+    vertical-align: text-top;
+    border-style: none;
+}
+
+/** Image for drop down items. */
+img.drop_down {
+    vertical-align: -5%;
+    padding-left: 2px;
+}
+
+/* Summary item labels. */
+td.summary_table_label {
+    font-weight: bold;
+}
+
+/** Container for the error message. */
+div.error {
+    color: #a80000;
+    font-size: 110%;
+    margin: 30px 15px;
+    display: block;
+    text-align: center;
+}
+
+/** The header bar for the content section. */
+div.content_header {
+    font-size: 80%;
+    position: relative;
+    border: 1px solid gray;
+    margin: 0 15px;
+    background-color: rgba(255, 255, 0, 0.10);
+}
+div.content_header_links {
+    clear: both;
+    float: right;
+    padding: 15px;
+}
+div.content_header_summary {
+    clear: both;
+    display: inline-block;
+    position: relative;
+    padding-top: 1px;
+    padding-bottom: 2px;
+}
+
+/** Container for the navigation links. */
+div.navigation {
+    clear: both;
+    float: right;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid gray;
+    margin-top: -1px;
+    margin-right: -1px;
+    background-color: white;
+}
+span.navigation {
+    padding: 0 10px;
+    display: inline-block;
+    min-width: 65px;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+span.navigation.previous {
+    border-right: 1px solid #a9a9a9;
+}
+span.navigation.next {
+    border-left: 1px solid #a9a9a9;
+}
+span.navigation.previous img.arrow {
+    padding-right: 5px;
+}
+span.navigation.next img.arrow {
+    padding-left: 5px;
+}
+span.navigation img.arrow {
+    height: 15px;
+    vertical-align: -15%;
+}
+
+/** Container for a run's summary information. */
+div.summary {
+    clear: both;
+    margin: 5px 0 5px 10px;
+}
+div.summary span.summary_row {
+    display: block;
+}
+div.summary span.summary_row.padded {
+    margin-top: 10px;
+}
+div.summary span.summary_row.tabbed {
+    margin-left: 20px;
+}
+div.summary span.summary_row table td {
+    background-color: rgba(255, 255, 0, 0.10);
+}
+div.summary span.summary_row table td.padded {
+    padding-left: 10px;
+}
+
+/** Result type failed. */
+span.fail {
+    color: #cd0000;
+}
+
+/** Result type passed. */
+span.pass {
+    color: #007f00;
+}
+
+/** Result type exception. */
+span.exception {
+    color: #cd0000;
+}
+
+/** Result type unknown. */
+span.unknown {
+    color: #cd0000;
+}
+
+/** Result type passed with warning. */
+span.warn {
+    color: #ff7f00;
+}

@@ -1,0 +1,9 @@
+-# Renders a generic run result run name span.
+
+- run_result = @content[:run_result]
+%span.block
+  %a{href: link('run', run_result.run_name, 'index.html')}= run_result.run_name
+- summary = run_result.summary
+- unless summary.nil?
+  %span.block
+    = summary

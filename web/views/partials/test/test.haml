@@ -1,0 +1,21 @@
+-# Renders a generic test result row.
+
+-# test - local variable provided by the calling template.
+-# run_config - local variable provided by the calling template.
+
+-# The config version
+- test_name = test.test_name
+- application = test.run_config.application
+- application_name = application.application_name
+- config_name = run_config.config_name
+%tr{class: 'tests_table data'}
+  %td
+  %td
+  %td
+    %a{href: link('config', application_name, config_name, 'test', test_name, 'history.html')}
+      - args = {locals: {test: test}}
+      = scoped_partial('test/test_name', application_name, args)
+    = '--'
+    = "#{test_test_type(test)}Test"
+  %td
+  %td

@@ -1,0 +1,17 @@
+-# Renders the header links for reports.
+
+- run_result = @content[:run_result]
+- active_link = @header[:page_name]
+
+- if run_result && !@header[:header_links_disabled]
+  - run_name = run_result.run_name
+  - header_links = {}
+  - header_links['index.html'] = {display: 'Results', href: link('run', run_name, 'index.html')}
+  - header_links['summary.html'] = {display: 'Summary', href: link('run', run_name, 'summary.html')}
+  .header_links
+    - header_links.each_pair do |name, link|
+      - if name.eql?(active_link)
+        %span.header_link.active= link[:display]
+      - else
+        %span.header_link
+          %a{href: link[:href]}= link[:display]

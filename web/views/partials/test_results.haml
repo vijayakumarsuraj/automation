@@ -1,0 +1,65 @@
+-# Renders the run results of a particular test.
+
+- test = @content[:test]
+- run_config = @content[:run_config]
+
+- test_name = test.test_name
+- config_name = run_config.config_name
+- application_name = run_config.application.application_name
+- run_results = run_config.run_results
+- container_id = "table_container_#{test_name}"
+- table_id = "table_#{test_name}"
+
+:javascript
+  $(document).ready(function() {
+    $("##{table_id}").dataTable($.extend({}, dataTableDefaults, {
+      "bPaginate": true,
+      "bFilter": true,
+      "bInfo": true,
+    }));
+  });
+.table_container.runs_table{id: container_id}
+  .table_title_bar
+    %span.table_title
+      = "#{config_name} - #{test_name}"
+  .table_data
+    %table.results{id: table_id}
+      %thead
+        %tr.tests_table.header
+          %td{style: 'min-width: 15px;'}
+          %td{style: 'min-width: 15px;'}
+          %td
+          %td{width: '100%'}
+          %td
+      %tbody
+        - run_results.reverse[0..50].each do |run_result|
+          - run_name = run_result.run_name
+          - test_result = Automation::ResultsDatabase::TestResult.where(run_result_id: run_result, test_id: test).first
+          - if test_result.nil?
+            -# The test did no run here.
+            %tr{class: 'tests_table data'}
+              %td
+              %td
+              %td
+                %a{href: link('run', run_name, 'index.html')}= run_name
+              %td
+              %td
+          - else
+            -# Now look for a file named <application>/partials/test_result.haml. If it does not exist
+            -# render partials/test_result.haml
+            - @content[:run_result] = run_result
+            - args = {locals: {test_result: test_result, show_run_name: true, show_test_name: false, selectable: false}}
+            = scoped_partial('test_result/test_result', application_name, args)
+
+          -# Any changes are reported too.
+          - changes = test_changes(run_result, test)
+          - next if changes.length == 0
+          -# Concatenate the names of the changes and display.
+          - change_names = changes.map { |change| change_text(change) }
+          %tr{class: 'tests_table data change'}
+            %td
+            %td
+            %td
+              = change_names.join(', ')
+            %td
+            %td

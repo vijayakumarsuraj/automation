@@ -1,0 +1,7 @@
+-# Renders the run result summary block.
+
+- run_result = @content[:run_result]
+- summary = run_result.summary
+- unless summary.nil?
+  %span.summary_row.padded
+    %strong= summary

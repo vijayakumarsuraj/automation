@@ -1,0 +1,37 @@
+-# Renders the header bar for reports.
+
+- if @content[:run_config]
+  - application_name = @content[:run_config].application.application_name
+- elsif @content[:run_result]
+  - application_name = @content[:run_result].run_config.application.application_name
+- else
+  - application_name = nil
+
+.header_bar
+  .header_text= @content[:header_text]
+  .header_items
+    - if @user
+      .header_item
+        = "#{@user.display_name}, "
+        %a{href: "javascript:logout('#{link('logout')}');"}
+          %span#login_link Log out
+    - else
+      .header_item
+        %a{href: "javascript:showLoginDiv('#{link('login.ajax')}');"}
+          %span#login_link Log in
+  .header_crumbs
+    - active_crumb = @content[:header_crumbs].keys[-1]
+    - @content[:header_crumbs].each_pair do |name, link|
+      - if name.eql?(active_crumb)
+        %span.header_crumb.active= link[:display]
+      - else
+        %span.header_crumb
+          %a{href: link[:href]}= link[:display]
+          >>
+
+  .flash_messages
+  - flash_messages.each do |type|
+    - if flash[type]
+      %span.flash_message{class: type}!= flash[type]
+
+  = scoped_partial('header_links', application_name)

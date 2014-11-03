@@ -1,0 +1,11 @@
+-# Renders generic task result links.
+
+-# task_result - local variable provided by the calling template.
+
+- run_result = task_result.run_result
+- task = task_result.task
+- task_name = task.task_name
+- run_name = run_result.run_name
+
+%a.link{href: link('run', run_name, 'static', "#{task_name}.log")}
+  %span.link Log

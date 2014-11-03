@@ -1,0 +1,16 @@
+-# Renders the table that contains the test results for a particular change.
+
+-# change - local variable provided by the calling template.
+-# table_name - local variable provided by the calling template.
+-# table_title - local variable provided by the calling template.
+
+- run_result = @content[:run_result]
+- run_config = run_result.run_config
+- application_name = run_config.application.application_name
+
+- test_results = run_result_change_results(run_result, change)
+- return if test_results.length == 0
+
+- args = {locals: {test_results: test_results, table_name: table_name, table_title: table_title, reduced_datatable: true}}
+= scoped_partial('test_result/test_results_table', application_name, args)
+

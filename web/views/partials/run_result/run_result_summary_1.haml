@@ -1,0 +1,16 @@
+-# Renders the run result summary block.
+
+- run_result = @content[:run_result]
+- status = entity_status(run_result)
+%span.summary_row.padded
+  = run_result_summary_test_count_html(run_result)
+  - if status == Automation::Status::Complete
+    - added, removed, failing, passing, changed = run_result_change_counts(run_result)
+    - if (added + removed + failing + passing + changed) > 0
+      %span.summary_row= run_result_summary_change_html(run_result)
+    - previous_run_result = @results_database.get_analysed_against_run_result(run_result)
+    - unless previous_run_result.nil?
+      %span.summary_row
+        - previous_run_name = previous_run_result.run_name
+        Analysed against
+        %a{href: link(@header[:nav_prefix], previous_run_name, @header[:page_name])}= previous_run_name

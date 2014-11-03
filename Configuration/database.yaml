@@ -1,0 +1,39 @@
+# The properties for connecting to the framework's databases.
+
+database:
+  id: "development"
+
+  default_host: "127.0.0.1"
+  default_port: 3306
+  # The results database stores details of each run executed by the framework.
+  results_database:
+    database_id: "${database.id}"
+    logging: "WARN"
+    # Embedded SQLite3 database for development work.
+    development:
+      adapter: "sqlite"
+      file: "${data.directory}/results.db3"
+    # MySQL database for live results.
+    production:
+      adapter: "mysql"
+      database: "automation_results"
+    # MySQL database for sandbox results.
+    sandbox:
+      adapter: "mysql"
+      database: "automation_results_sandbox"
+  # The web database stores information needed for the WebApp Sinatra application.
+  web_database:
+    database_id: "${database.id}"
+    logging: "WARN"
+    # Embedded SQLite3 database for development work.
+    development:
+      adapter: "sqlite"
+      file: "${data.directory}/web.db3"
+    # MySQL database for live results.
+    production:
+      adapter: "mysql"
+      database: "automation_web"
+    # MySQL database for sandbox results.
+    sandbox:
+      adapter: "mysql"
+      database: "automation_web_sandbox"

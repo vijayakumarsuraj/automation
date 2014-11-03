@@ -1,0 +1,8 @@
+# The configuration file for the 'console' mode.
+
+# Task group properties.
+task_groups:
+  setup:
+    tasks: []
+  teardown:
+    tasks: []

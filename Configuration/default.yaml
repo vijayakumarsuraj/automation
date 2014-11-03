@@ -1,0 +1,131 @@
+# The main configuration file for the framework.
+
+# Include the database properties.
+include: ["database.yaml"]
+
+# Tools used by the framework.
+tool:
+  compare_it:
+    executable: "wincmp3.exe"
+  7z:
+    executable: "7z.exe"
+
+logging:
+  level: "DEBUG"
+  pattern : "[%d] %-5l -- %c (%x) : %m\\n"
+
+data:
+  directory: "${root_directory}/Data"
+
+dist:
+  directory: "${root_directory}/Dist"
+
+temp:
+  directory: "${data.directory}/Temp"
+
+# The directory where the test packs are located.
+test_packs:
+  directory: "${root_directory}/Test Packs"
+# The directory that contains the test pack files.
+test_pack:
+  directory: "${test_packs.directory}/${test_pack.name}"
+  libraries_directory: "${test_pack.directory}/Libraries"
+  temp_directory: "${test_pack.directory}/Temp"
+  tests_directory: "${test_pack.directory}/Tests"
+  test_directory: "${test_pack.tests_directory}/${test.name}"
+  test_data_directory: "${test_pack.test_directory}/Data"
+  test_file: "${test_pack.test_directory}/${test.name}.rb"
+  # The prefix for the class names of this test pack.
+  test_module: ""
+
+# The directory that contains all result files.
+results:
+  archive: "${data.directory}/Archive/Results"
+
+# Run configurations.
+run:
+  config_name: "${test_pack.name}"
+  name: "${run.config_name}_${run.start_date_time}"
+  type: "default"
+  working:
+    directory: "${temp.directory}/${run.name}"
+  analysis:
+    directory: "${run.working.directory}/Analysis"
+  result:
+    directory: "${run.working.directory}/Results"
+    zip_file_name: "${run.name}.zip"
+  trigger:
+    user:
+    official_users: ["Schedule Trigger", "Subversion"]
+
+manager:
+  service:
+    test_monitor:
+      enabled: true
+      # Timing information for the monitor.
+      frequency: 60 # 60s = 1m
+      default_duration: 1200 # 1200s = 20m
+      minimum_duration: 600 # 600s = 10m
+      maximum_duration: 2400 # 2400s = 40m
+      heartbeat:
+        timeout: 60 # 60s
+
+test:
+  heartbeat:
+    # The frequency with which a test will send heartbeat messages.
+    frequency: 10 # 10s
+  working:
+    directory: "${run.working.directory}/${test.name}"
+
+# Mode properties.
+mode:
+  rake:
+    description: "Executes tests in separate processes using Rake (no support for parallel execution)."
+  debug:
+    description: "Executes a test in the current process. Can execute exactly one test."
+  execute:
+    description: "Executes tests in separate processes using Ruby (full support for parallel execution)"
+  # Administrative modes.
+  console:
+    description: "An interactive console for running administrative tasks."
+  janitor:
+    description: "Performs general clean-up tasks."
+  # Web server.
+  web:
+    description: "Web server for hosting test results."
+
+# Database properties.
+database:
+  results_database:
+    singleton: true
+  web_database:
+    singleton: true
+
+result_data:
+  test_result_data:
+    empty:
+  run_result_data:
+    empty:
+  result_archive:
+    singleton: true
+
+# Task properties.
+task:
+  pid: "${run.pid}"
+  observers: []
+  results:
+    zip_file_name: "${task.name}.zip"
+
+  test_runner:
+    depends_on: []
+    observers: ["test_monitor"]
+  finaliser:
+    depends_on: []
+  analyser:
+    depends_on: ["finaliser"]
+
+# Observer properties.
+observer:
+  test_monitor:
+    class_name: "TestMonitorObserver"
+    singleton: true

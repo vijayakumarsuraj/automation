@@ -1,0 +1,18 @@
+# Configurations for all runner modes.
+
+mode:
+  runner:
+    execute: ["setup", "tests", "teardown"]
+    target: "teardown"
+
+# Task group properties.
+task_groups:
+  setup:
+    tasks: []
+    stop_on_failure: true
+  tests:
+    depends_on: ["setup"]
+    tasks: []
+  teardown:
+    depends_on: ["tests", "setup"]
+    tasks: ["finaliser", "analyser"]

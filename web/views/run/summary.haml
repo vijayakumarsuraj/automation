@@ -1,0 +1,10 @@
+-# Shows all test results.
+
+- run_result = @content[:run_result]
+- run_config = run_result.run_config
+- application_name = run_config.application.application_name
+
+.header
+  = scoped_partial('header', application_name)
+.content
+  = scoped_partial('run_results_summary', application_name)
