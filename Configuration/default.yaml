@@ -17,8 +17,8 @@ logging:
 data:
   directory: "${root_directory}/Data"
 
-dist:
-  directory: "${root_directory}/Dist"
+package:
+  directory: "${root_directory}/Package"
 
 temp:
   directory: "${data.directory}/Temp"

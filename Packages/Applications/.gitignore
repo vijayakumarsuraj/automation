@@ -1,0 +1,3 @@
+# Ignore application packages.
+# These will have to be added manually.
+*

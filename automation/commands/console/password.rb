@@ -9,16 +9,16 @@ require 'automation/console/console_command'
 
 module Automation
 
-  class EncryptPasswordCommand < ConsoleCommand
+  class PasswordCommand < ConsoleCommand
 
-    # Encrypt password command.
+    # Password command.
     #
     # @param [Automation::Console] console the mode that executed this command.
     def initialize(console)
       super
     end
 
-    # Executes the encrypt password command.
+    # Executes the password command.
     def execute
       string = prompt('String: ')
 

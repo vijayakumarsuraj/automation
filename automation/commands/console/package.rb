@@ -6,27 +6,27 @@
 
 require 'automation/console/console_command'
 
-require 'automation/core/distribution'
+require 'automation/core/package'
 
 module Automation
 
-  class PluginConsoleCommand < ConsoleCommand
+  class PackageCommand < ConsoleCommand
 
-    # Plugin console command.
+    # Package command.
     #
     # @param [Automation::Console] console the mode that executed this command.
     def initialize(console)
       super
     end
 
-    # Executes the plugin console command.
+    # Executes the package command.
     def execute
       while true
         type = prompt('Type (application,test_pack,feature,exit): ')
         return if type.eql?('exit')
         # Get the prefix and class to use.
         method_name = "type_#{type}"
-        raise Automation::ConsoleError.new("Type '#{type}' not recognized - Method '#{method_name}' not found") unless respond_to?(method_name, true)
+        next echo("Type '#{type}' not recognized - Method '#{method_name}' not found") unless respond_to?(method_name, true)
         prefix, plugin = send(method_name)
         # Execute action loop indefinitely.
         action_loop(prefix, plugin)
@@ -37,25 +37,25 @@ module Automation
 
     # Returns the class for working with 'application' packages.
     #
-    # @return [Array<String, Automation::Distribution>]
+    # @return [Array<String, Automation::Package>]
     def type_application
-      require 'automation/distributions/application_distribution'
-      ['Application', Automation::ApplicationDistribution]
-    end
-
-    # Returns the class for working with 'test_pack' packages.
-    #
-    # @return [Array<String, Automation::Distribution>]
-    def type_test_pack
-      require 'automation/distributions/test_pack_distribution'
+      require 'automation/packages/application_package'
+      ['Application', Automation::ApplicationPackage]
     end
 
     # Returns the class for working with 'feature' packages.
     #
-    # @return [Array<String, Automation::Distribution>]
+    # @return [Array<String, Automation::Package>]
     def type_feature
-      require 'automation/distributions/feature_distribution'
-      ['Feature', Automation::FeatureDistribution]
+      require 'automation/packages/feature_package'
+      ['Feature', Automation::FeaturePackage]
+    end
+
+    # Returns the class for working with 'test_pack' packages.
+    #
+    # @return [Array<String, Automation::Package>]
+    def type_test_pack
+      require 'automation/packages/test_pack_package'
     end
 
     # Loop indefinitely prompting for and executing actions.
@@ -68,8 +68,8 @@ module Automation
         return if action.eql?('exit')
 
         method_name = "action_#{action}"
-        raise Automation::ConsoleError.new("Action '#{action}' not recognized - Method '#{method_name}' not found") unless respond_to?(method_name, true)
-        send(method_name, prefix, clazz)
+        next echo("Action '#{action}' not recognized - Method '#{method_name}' not found") unless respond_to?(method_name, true)
+        send(method_name, prefix, clazz) rescue echo($!.message)
       end
     end
 

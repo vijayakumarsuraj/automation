@@ -7,11 +7,7 @@ require 'automation/console/console_command'
 
 module Automation
 
-  class InteractiveConsoleCommand < ConsoleCommand
-
-    # Empty class that will be binding context for all statements executed here.
-    class InteractiveConsole
-    end
+  class IrbCommand < ConsoleCommand
 
     # New interactive console command.
     #

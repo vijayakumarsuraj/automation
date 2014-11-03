@@ -1,0 +1,3 @@
+# Ignore test pack packages.
+# These will have to be added manually.
+*
