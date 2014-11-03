@@ -1,15 +1,5 @@
-# Framework runtime directory.
-/Data/**
-
 # Bundle directory
 /.bundle/
-
-# Framework plugin directories.
-/Test Packs/**
-/Applications/**
-/web/applications/**
-/Features/**
-/Configuration/Features/**
 
 # RubyMine project directory.
 /.idea/

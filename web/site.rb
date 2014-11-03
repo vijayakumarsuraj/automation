@@ -14,13 +14,10 @@ require 'web/helpers/cache_helper'
 require 'web/helpers/database_helpers'
 require 'web/helpers/date_time_helpers'
 require 'web/helpers/diff_helpers'
-require 'web/helpers/phase_two_helpers'
-require 'web/helpers/reval_helpers'
 require 'web/helpers/run_result_helpers'
 require 'web/helpers/run_result_html_helpers'
 require 'web/helpers/site_helpers'
 require 'web/helpers/test_result_helpers'
-require 'web/helpers/westminster_helpers'
 
 module Automation
 
@@ -37,8 +34,8 @@ module Automation
                          '.log' => 'text/plain', '.txt' => 'text/plain'}
 
     # The automation environment.
-    environment = Automation.environment
-    config_manager = environment.config_manager
+    env = Automation.environment
+    config_manager = env.config_manager
 
     # Add support for the partial and render methods in HAML.
     register Sinatra::Partial
@@ -49,43 +46,12 @@ module Automation
     register Sinatra::Flash
 
     # Use the framework's logger.
-    use Rack::CommonLogger, environment.logger
+    use Rack::CommonLogger, env.logger
 
     # Attach helpers.
     helpers Automation::DatabaseHelpers, Automation::DateTimeHelpers, Automation::RunResultHelpers,
             Automation::SiteHelpers, Automation::TestResultHelpers, Automation::CacheHelpers,
             Automation::DiffHelpers, Automation::RunResultHtmlHelpers
-
-    # Application specific helpers.
-    helpers Automation::RevalHelpers
-    helpers Automation::PhaseTwoHelpers
-    helpers Automation::WestminsterHelpers
-
-    # Reval specific database.
-    environment.databases['reval'] = proc do
-      next environment.reval_database if environment.defined?(:reval_database)
-
-      file = File.join(FRAMEWORK_ROOT, APP_DIR, 'reval/Configuration/default.yaml')
-      config = Configuration::YamlConfiguration.new(file)
-      config_manager.add_configuration('reval', config, 1)
-      # Create.
-      require 'reval/databases/reval_database'
-      environment.save(:reval_database, Automation::Reval::RevalDatabase.new)
-      environment.reval_database
-    end
-
-    # PhaseTwo specific database.
-    environment.databases['phase_two'] = proc do
-      next environment.phase_two_database if environment.defined?(:phase_two_database)
-
-      file = File.join(FRAMEWORK_ROOT, APP_DIR, 'phase_two/Configuration/default.yaml')
-      config = Configuration::YamlConfiguration.new(file)
-      config_manager.add_configuration('phase_two', config, 1)
-      # Create.
-      require 'phase_two/databases/phase_two_database'
-      environment.save(:phase_two_database, Automation::PhaseTwo::PhaseTwoDatabase.new)
-      environment.phase_two_database
-    end
 
     # Debugging information.
     disable :logging
@@ -103,7 +69,16 @@ module Automation
 
     # App directories.
     set :root, File.join(FRAMEWORK_ROOT, 'web')
-    set :views, %w(views applications)
+    set :views, %w(views)
+
+    # Application bootstraps.
+    FileUtils.cd(File.join(config_manager['root_directory'], 'web/applications')) do
+      Dir.glob('*') do |application|
+        env.logger.info("Initialising application '#{application}'...")
+        require File.expand_path(File.join(application, 'init.rb'))
+        settings.views << "applications/#{application}/views"
+      end
+    end
 
     # Special helper for the views array.
     helpers do
@@ -120,5 +95,3 @@ require 'web/controllers/home'
 require 'web/controllers/error'
 require 'web/controllers/run_config'
 require 'web/controllers/run'
-require 'web/controllers/phase_two'
-require 'web/controllers/reval'

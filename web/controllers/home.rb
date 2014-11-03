@@ -36,11 +36,6 @@ module Automation
       @content[:header_crumbs] = {home: {display: 'Home', href: link('index.html')}}
 
       @defaults = {}
-
-      # Application specific hooks.
-      reval_before
-      phase_two_before
-      westminster_before
     end
 
     # Executed after each request.

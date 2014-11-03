@@ -90,7 +90,6 @@ module Automation
       env = {mysql_lib: to_windows_path(connector_dir)}
 
       print 'ruby.exe location: '; env[:ruby_bin] = read_path
-      print 'python.exe location: '; env[:python_bin] = read_path
       print '7z.exe location: '; env[:zip_bin] = read_path
       print 'wincmp3.exe location: '; env[:compare_bin] = read_path
       puts
@@ -183,13 +182,12 @@ SET __ENV__=TRUE
 
 REM Paths to required applications.
 SET RUBY=%{ruby_bin}
-SET PYTHON=%{python_bin}
 SET ZIP=%{zip_bin}
 SET COMPARE=%{compare_bin}
 SET MYSQL2=%{mysql_lib}
 
 REM Update the PATH environment variable.
-SET PATH=%%RUBY%%;%%PYTHON%%;%%ZIP%%;%%COMPARE%%;%%MYSQL2%%;%%PATH%%
+SET PATH=%%RUBY%%;%%ZIP%%;%%COMPARE%%;%%MYSQL2%%;%%PATH%%
 
 :END
 ENV_BAT
