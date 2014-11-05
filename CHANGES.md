@@ -12,12 +12,12 @@ General
 
 Command-line interface
 ----------------------
-- The '--application' and '--mode' options are gone. They have been replaced with a mandatory first argument whose format is <application>-<mode>.
+- The '--application' and '--mode' options are gone. They have been replaced with a mandatory first argument whose format is `<application>-<mode>`.
 
 
 Setup
 -----
-- The framework configures itself automatically with little to no manual intervention.
+- The framework configures itself automatically with little manual intervention.
 - Gems are installed to a local gem repo by the framework - so no conflicts with Ruby's global repo.
 
 

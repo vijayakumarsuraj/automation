@@ -6,3 +6,6 @@
 
 # NetBeans project directory.
 /nbproject/
+
+# Generated env configurator.
+/env.bat
