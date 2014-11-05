@@ -84,7 +84,7 @@ module Automation
     def clean_test
     end
 
-    # Asserts the specified assertion. If the assertion fails, the test is marked as failed.
+    # Asserts the specified assertion. If the assertion fails, an AssertionFailedError is raised.
     #
     # @param [Automation::Assertion] assertion the assertion.
     # @return [Boolean] true if the assertion succeeds, false otherwise.
@@ -93,8 +93,9 @@ module Automation
         @logger.info("#{assertion.class.basename} passed -- #{assertion.message}")
         true
       else
+        assertion.backtrace = caller # Set the backtrace to this point.
         @runner.update_result(Automation::Result::Fail)
-        @runner.notify_test_failed(assertion)
+        @runner.notify_test_failed(AssertionFailedError.new(assertion))
         @logger.error("#{assertion.class.basename} failed -- #{assertion.message}")
         false
       end

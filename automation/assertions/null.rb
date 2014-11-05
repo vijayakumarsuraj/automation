@@ -13,12 +13,10 @@ module Automation
     # New success assertion.
     #
     # @param [String] message
-    # @param [String] details
-    def initialize(message, details)
+    def initialize(message)
       super()
 
       @message = message
-      @details = details
     end
 
     # Always return true.
@@ -34,12 +32,10 @@ module Automation
     # New failure assertion.
     #
     # @param [String] message
-    # @param [String] details
-    def initialize(message, details)
+    def initialize(message)
       super()
 
       @message = message
-      @details = details
     end
 
     # Always returns false.
@@ -56,19 +52,17 @@ module Automation
     # Assertion that always fails.
     #
     # @param [String] message
-    # @param [String] details
     # @return [Automation::FailureAssertion] the file compare assertion.
-    def failure(message = '', details = '')
-      FailureAssertion.new(message, details)
+    def failure(message = '')
+      FailureAssertion.new(message)
     end
 
     # Assertion that always passes.
     #
     # @param [String] message
-    # @param [String] details
     # @return [Automation::FailureAssertion] the file compare assertion.
-    def success(message = '', details = '')
-      SuccessAssertion.new(file)
+    def success(message = '')
+      SuccessAssertion.new(message)
     end
 
   end

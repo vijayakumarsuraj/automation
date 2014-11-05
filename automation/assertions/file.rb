@@ -29,15 +29,11 @@ module Automation
         if no_change
           # Files are exact match.
           @message = "#{prefix} : Actual and expected files are an exact match."
-          @details = ''
           return true
         end
-
         @message = "#{prefix} : Actual file did not match expected file!"
-        @details = ''
       else
         @message = "#{prefix} : Expected file not found."
-        @details = ''
       end
       # Comparison failed.
       false
@@ -62,11 +58,9 @@ module Automation
       prefix = File.basename(@file)
       if File.exist?(@file)
         @message = "#{prefix} : Expected file exists"
-        @details = ''
         true
       else
         @message = "#{prefix} : Expected file not found."
-        @details = ''
         false
       end
     end

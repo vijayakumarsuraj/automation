@@ -33,9 +33,9 @@ module Automation
 
     # Notifies all observers that the test being run has failed.
     #
-    # @param [Automation::Assertion, Exception] assertion the assertion or exception that caused this test to fail
-    def notify_test_failed(assertion)
-      notify_change('test_failed', assertion)
+    # @param [Exception] exception the exception that caused this test to fail
+    def notify_test_failed(exception)
+      notify_change('test_failed', exception)
     end
 
     # Updates the test result with the process id of the test being executed.

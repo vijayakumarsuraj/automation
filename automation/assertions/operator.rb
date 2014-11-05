@@ -80,7 +80,6 @@ module Automation
     def check
       result = @inner.check
       @message = @inner.message
-      @details = @inner.details
 
       !result
     end
