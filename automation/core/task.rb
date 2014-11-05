@@ -40,6 +40,14 @@ module Automation
       @results_database = @databases.results_database
     end
 
+    # Notifies a change to all registered observers.
+    #
+    # @param [Array] args the arguments to pass to the registered observers.
+    def notify_change(method, *args)
+      changed
+      notify_observers(method, self, *args)
+    end
+
     # Get the process ID of this task.
     #
     # @return [String, Integer] the PID.
@@ -86,25 +94,26 @@ module Automation
 
     # Loads all observers for this task.
     def load_observers(observers = [])
-      run_observers = @config_manager['task.observers']
-      task_observers = @config_manager["task.#{@component_name}.observers", default: []]
-      observers = (run_observers + task_observers + observers).uniq
-      observers.each do |name|
-        begin
-          add_observer(load_component(Component::ObserverType, name))
-        rescue
-          @logger.warn("Observer '#{name}' failed to start.")
-          @logger.debug(format_exception($!))
+      # Observers to be enabled for all tasks.
+      run_observers = @config_manager.get_child?('task.observer')
+      run_observers = run_observers ? run_observers.map_child { |child| [child.name, child.value] } : []
+      # Observers to be enabled for this task.
+      task_observers = @config_manager.get_child?("task.#{@component_name}.observer")
+      task_observers = task_observers ? task_observers.map_child { |child| [child.name, child.value] } : []
+      # Combined list of all observers.
+      all_observers = Hash.new { |h, k| h[k] = true }
+      (run_observers + task_observers + observers).each { |name, value| all_observers[name] = (all_observers[name] && value) }
+      # Load up each observer that was enabled.
+      all_observers.each_pair do |name, value|
+        if value
+          begin
+            add_observer(load_component(Component::ObserverType, name))
+          rescue
+            @logger.warn("Observer '#{name}' failed to start.")
+            @logger.debug(format_exception($!))
+          end
         end
       end
-    end
-
-    # Notifies a change to all registered observers.
-    #
-    # @param [Array] args the arguments to pass to the registered observers.
-    def notify_change(method, *args)
-      changed
-      notify_observers(method, self, *args)
     end
 
     # Executed before the task runs.

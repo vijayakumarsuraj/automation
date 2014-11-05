@@ -3,10 +3,3 @@
 setup:
   # Gems are installed locally by the framework (path with spaces in not allowed).
   gem_path: "vendor/bundle"
-
-  # Enable / disable the installation of the Sinatra web server (for viewing results).
-  install_web: true
-  # Enable / disable the installation of the MySQL gem.
-  install_mysql: true
-  # Enable / disable the installation of the webdriver gem.
-  install_webdriver: true

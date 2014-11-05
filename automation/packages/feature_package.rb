@@ -23,10 +23,14 @@ module Automation
 
       feature_directory = File.join(config_manager['features_directory'], app_name)
       raise PackageError.new("Feature directory '#{feature_directory}' does not exist") unless File.directory?(feature_directory)
-      feature_config = File.join(config_manager['root_directory'], 'Configuration', Automation::FET_DIR, "#{app_name}.yaml")
+      root_directory = config_manager['root_directory']
+      feature_config = File.join(root_directory, 'Configuration', Automation::FET_DIR, "#{app_name}.yaml")
       raise PackageError.new("Feature configuration '#{feature_config}' does not exist") unless File.exist?(feature_config)
 
+      # Delete the required feature files.
       FileUtils.rm_rf([feature_directory, feature_config])
+      # Touch the framework's Gemfile - so that we force a 'bundle install'.
+      FileUtils.touch(File.join(root_directory, 'Gemfile'))
     end
 
     # Installs the feature.
@@ -56,13 +60,15 @@ module Automation
       FileUtils.cd(feature_directory) { seven_zip_extract(feature_file) }
 
       # Copy the feature config file.
+      root_directory = @config_manager['root_directory']
       feature_config_src = File.join(feature_package_directory, FEATURE_CONFIG)
-      feature_config_dest = File.join(@config_manager['root_directory'], 'Configuration', Automation::FET_DIR, "#{name}.yaml")
+      feature_config_dest = File.join(root_directory, 'Configuration', Automation::FET_DIR, "#{name}.yaml")
       FileUtils.cp(feature_config_src, feature_config_dest)
 
+      # Touch the framework's Gemfile - so that we force a 'bundle install'.
+      FileUtils.touch(File.join(root_directory, 'Gemfile'))
       # Delete the temporary directory we created.
       FileUtils.rm_rf(feature_package_directory)
-
       # Return the name of the feature that was installed.
       name
     end

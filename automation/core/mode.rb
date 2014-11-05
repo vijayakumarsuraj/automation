@@ -73,10 +73,10 @@ module Automation
 
       # Method for creating the observers option.
       def option_observers
-        block = proc { |observers| save_option_value('task.observers', observers.split(',')); propagate_option('--observers', observers) }
+        block = proc { |observers| observers.split(',').each { |observer| save_option_value("task.observer.#{observer}", nil) }; propagate_option('--observers', observers) }
         @cl_parser.on('--observers NAME1,NAME2', 'Enter a list of observers to use for this run.', &block)
 
-        block = proc { save_option_value('task.observers', 'team_city', true); propagate_option('--team-city-observer') }
+        block = proc { save_option_value('task.observer.team_city', nil); propagate_option('--team-city-observer') }
         @cl_parser.on('--team-city-observer', 'Add the TeamCity observer to this run so that status updates are reported to TeamCity.', "Requires the 'teamcity' feature", &block)
       end
 
@@ -168,6 +168,12 @@ module Automation
       #
       close_file_appender
       archive_run_result if (defined? @results_archive) && @archive_results
+    end
+
+    # Modes don't need to load observers - except for 'Runners'.
+    # And they need to be loaded much later than usual.
+    def load_observers(observers = [], force = false)
+      super(observers) if force
     end
 
     # The following steps are carried out (in no particular order):

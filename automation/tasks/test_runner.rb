@@ -19,6 +19,8 @@ module Automation
     attr_reader :test_result
     # The test's name.
     attr_reader :test_name
+    # Test test object.
+    attr_reader :test
 
     # New test runner that will load and execute the the test specified by the test.name property.
     # The results are also persisted.
@@ -31,10 +33,9 @@ module Automation
 
     # Notifies all observers that the test being run has failed.
     #
-    # @param [String] message the message to report.
-    # @param [String, Array] details details of the failure (e.g. the backtrace).
-    def notify_test_failed(message, details = '')
-      notify_change('test_failed', message, details)
+    # @param [Automation::Assertion, Exception] assertion the assertion or exception that caused this test to fail
+    def notify_test_failed(assertion)
+      notify_change('test_failed', assertion)
     end
 
     # Updates the test result with the process id of the test being executed.
@@ -86,7 +87,7 @@ module Automation
     # The following steps are carried out by the default test runner (in no particular order):
     # 1. Notify all observers that the test has failed.
     def exception(ex)
-      notify_test_failed(ex.message, ex.backtrace)
+      notify_test_failed(ex)
       #
       super
     end
@@ -113,12 +114,12 @@ module Automation
       Logging.ndc.push(@test_name)
       #
       super
-      notify_change('test_started')
       @result_data = TaskResultData.new(@config_manager['run.result.directory'], @test_name)
       #
       @logger.debug('Loading test...')
       load_test
       create_working_directory
+      notify_change('test_started')
       #
       @logger.debug('Loading database resources...')
       @run_result = @results_database.get_run_result
@@ -128,6 +129,10 @@ module Automation
       # Validate that the resources were created properly.
       raise DataError.new("Could not create the 'Test' resource") if @resource.nil?
       raise DataError.new("Could not create the 'TestResult' resource") if @test_result.nil?
+      # Save extra test information to the database.
+      @resource.test_category = @test.category
+      @resource.test_description = @test.description
+      @resource.save
       # Save the current process' PID.
       update_pid
     end

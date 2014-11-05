@@ -145,6 +145,10 @@ module Automation
 
       # The target task that this runner will execute.
       @runner_target = @config_manager['mode.runner.target']
+
+      # Load observers and notify that the run is about to start.
+      load_observers([], true)
+      notify_change('runner_started')
     end
 
     # Overridden to include dependent tests while configuring the test pack.

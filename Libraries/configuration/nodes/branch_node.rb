@@ -185,6 +185,14 @@ module Configuration
       @children.length > 0
     end
 
+    # Yields each child under this branch.
+    # Returns an array of the items returned by the block.
+    def map_child
+      array = []
+      @children.each_pair { |_, child| array << (yield child) }
+      array
+    end
+
     # Removes the specified child from this node. Returns the child that was removed, or nil.
     #
     # @param [String] child_name the name of the child to remove.

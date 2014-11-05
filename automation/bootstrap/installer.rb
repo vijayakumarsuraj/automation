@@ -41,14 +41,8 @@ module Automation
 
     # Attempts to install all required gems.
     def install_gems
-      install_web = @settings['setup.install_web']
-      install_mysql = @settings['setup.install_mysql']
-      install_webdriver = @settings['setup.install_webdriver']
-      # Exclude any unnecessary groups.
+      # Excluded groups.
       without = []
-      without << 'web' unless install_web
-      without << 'mysql' unless install_mysql
-      without << 'webdriver' unless install_webdriver
       # Validate install paths.
       validate_path(environment.gem_path)
       validate_path(environment.mysql_dir)

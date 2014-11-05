@@ -89,7 +89,7 @@ module Automation
     # Notify the monitor that a heartbeat was received.
     #
     # @param [String] test_name the name of the test.
-    def test_heartbeat(test_name)
+    def test_monitor_heartbeat(test_name)
       @mutex.synchronize do
         @tests[test_name].heartbeat_received if @tests.has_key?(test_name)
       end
@@ -98,7 +98,7 @@ module Automation
     # Notify the monitor that a test has started.
     #
     # @param [String] test_name the name of the test.
-    def test_register(test_name)
+    def test_monitor_register(test_name)
       @mutex.synchronize do
         if @tests.has_key?(test_name)
           @logger.warn("Ignoring registration attempt. '#{test_name}' already exists.")
@@ -112,7 +112,7 @@ module Automation
     # Notify the monitor that a test has completed.
     #
     # @param [String] test_name the name of the test.
-    def test_unregister(test_name)
+    def test_monitor_unregister(test_name)
       @mutex.synchronize do
         if @tests.has_key?(test_name)
           @tests.delete(test_name)

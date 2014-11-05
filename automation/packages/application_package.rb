@@ -23,10 +23,14 @@ module Automation
 
       application_directory = File.join(config_manager['applications_directory'], app_name)
       raise PackageError.new("Application directory '#{application_directory}' does not exist") unless File.directory?(application_directory)
-      application_web_directory = File.join(config_manager['root_directory'], 'web/applications', app_name)
+      root_directory = config_manager['root_directory']
+      application_web_directory = File.join(root_directory, 'web/applications', app_name)
       raise PackageError.new("Application directory '#{application_web_directory}' does not exist") unless File.directory?(application_web_directory)
 
+      # Delete the required application files.
       FileUtils.rm_rf([application_directory, application_web_directory])
+      # Touch the framework's Gemfile - so that we force a 'bundle install'.
+      FileUtils.touch(File.join(root_directory, 'Gemfile'))
     end
 
     # Installs the application.
@@ -57,7 +61,8 @@ module Automation
 
       # Remove, if the web directory exists.
       # NOTE: this will remove existing installations even if the extraction fails - probably okay though.
-      application_web_directory = File.join(@config_manager['root_directory'], 'web/applications', name)
+      root_directory = @config_manager['root_directory']
+      application_web_directory = File.join(root_directory, 'web/applications', name)
       if File.exist?(application_web_directory)
         @logger.warn("Found existing installation - removing '#{application_web_directory}'...")
         FileUtils.rm_rf(application_web_directory)
@@ -67,9 +72,10 @@ module Automation
       web_package_file = File.join(app_package_directory, WEB_CODE_ZIP)
       FileUtils.cd(application_web_directory) { seven_zip_extract(web_package_file) }
 
+      # Touch the framework's Gemfile - so that we force a 'bundle install'.
+      FileUtils.touch(File.join(root_directory, 'Gemfile'))
       # Delete the temporary directory we created.
       FileUtils.rm_rf(app_package_directory)
-
       # Return the name of the application that was installed.
       name
     end

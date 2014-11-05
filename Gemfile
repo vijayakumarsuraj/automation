@@ -12,9 +12,7 @@ group :core do
   gem 'activerecord-import'
   gem 'squeel'
   gem 'sqlite3'
-
-  # Implementations of various algorithms (stacks, queues, rb-trees, etc...)
-  gem 'algorithms'
+  gem 'mysql2'
 end
 
 # Web server gems - needed only for hosting results.
@@ -27,12 +25,21 @@ group :web do
   gem 'haml'
 end
 
-# Install gems to work with MySQL databases.
-group :mysql do
-  gem 'mysql2'
+# Steps into each of the specified directories and attempts to load 'Gemfile'
+#
+# @param [String] directories
+def load_gemfiles(directories)
+  directories.each do |directory|
+    gemfile = File.expand_path(File.join(directory, 'Gemfile'))
+    eval(File.read(gemfile), binding) if File.exist?(gemfile)
+  end
 end
 
-# Install for web automation - will require the 'webdriver' feature.
-group :watir do
-  gem 'watir-webdriver'
-end
+# Now go in and look for any "feature" or "application" gem files.
+root_directory = File.dirname(File.realpath(__FILE__))
+# First the applications.
+applications_directory = File.join(root_directory, 'Applications')
+FileUtils.cd(applications_directory) { load_gemfiles(Dir.glob('*')) }
+# Then the features.
+features_directory = File.join(root_directory, 'Features')
+FileUtils.cd(features_directory) { load_gemfiles(Dir.glob('*')) }

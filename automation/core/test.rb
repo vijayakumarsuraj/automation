@@ -18,20 +18,33 @@ module Automation
     # Include the assertions supported for this test.
     include Automation::Assertions
 
+    # The name of this test.
+    attr_accessor :name
+
     # The logger used by this test - initialised to point to the logger used by the TestRunner task.
     attr_writer :logger
     # The test runner that is executing this test.
     attr_writer :runner
     # The result data store for this test.
     attr_writer :result_data
-    # The name of this test.
-    attr_writer :name
+
+    # A short description of this test. Default is an empty string.
+    attr_reader :description
+    # The category this test belongs to. Default is the config name.
+    attr_reader :category
+    # Arbitrary meta data for a test. Default is an empty hash.
+    attr_reader :metadata
 
     # New test.
     def initialize
       super
 
       @component_type = Automation::Component::TestType
+
+      @description = ''
+      @category = 'default'
+      @metadata = {}
+
       @runner = nil # Initialised automatically by the test runner.
       @result_data = nil # Initialised automatically by the test runner.
       @excel_data = nil # Initialised automatically when needed.
@@ -81,7 +94,7 @@ module Automation
         true
       else
         @runner.update_result(Automation::Result::Fail)
-        @runner.notify_test_failed(assertion.message, assertion.details)
+        @runner.notify_test_failed(assertion)
         @logger.error("#{assertion.class.basename} failed -- #{assertion.message}")
         false
       end

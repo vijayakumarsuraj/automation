@@ -3,6 +3,8 @@
 # 09 Apr 2014
 #
 
+require 'drb/drb'
+
 require 'automation/core/observer'
 require 'automation/core/task'
 

@@ -133,11 +133,15 @@ class CreateSchema < ActiveRecord::Migration
   def change_tests_table
     create_table :tests do |t|
       t.column :test_name, :string, limit: 255
+      t.column :test_description, :string, limit: 1000
+      t.column :test_category, :string, limit: 255
       t.column :type_name, :string, limit: 255
 
       t.references :run_config # Each test is associated with a run.
     end
 
+    add_index :tests, [:test_name]
+    add_index :tests, [:test_category]
     add_index :tests, [:test_name, :type_name, :run_config_id], unique: true
   end
 

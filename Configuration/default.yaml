@@ -18,7 +18,7 @@ data:
   directory: "${root_directory}/Data"
 
 package:
-  directory: "${root_directory}/Package"
+  directory: "${root_directory}/Packages"
 
 temp:
   directory: "${data.directory}/Temp"
@@ -112,13 +112,13 @@ result_data:
 # Task properties.
 task:
   pid: "${run.pid}"
-  observers: []
   results:
     zip_file_name: "${task.name}.zip"
 
   test_runner:
     depends_on: []
-    observers: ["test_monitor"]
+    observer:
+      test_monitor: true
   finaliser:
     depends_on: []
   analyser:
@@ -129,3 +129,7 @@ observer:
   test_monitor:
     class_name: "TestMonitorObserver"
     singleton: true
+
+service:
+  test_monitor:
+    empty:
