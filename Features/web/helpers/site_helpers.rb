@@ -163,8 +163,7 @@ module Automation
     # @param [String] application the current application
     # @param [Hash] options hash to pass to the 'partial' method.
     def scoped_partial(file, application, options = {})
-      dirname, basename = File.split(file)
-      app_partial = "partials/#{dirname}/#{application}.#{basename}"
+      app_partial = "partials/#{application}.#{file}"
       default_partial = "partials/#{file}"
       (!application.nil? && view_exist?(app_partial)) ? partial(app_partial, options) : partial(default_partial, options)
     end
@@ -221,14 +220,9 @@ module Automation
     # @param [String] view the logical name of the view.
     # @param [String] ext the extension for the view file.
     def view_exist?(view, ext = 'haml')
-      # Check each view root for the required file.
-      view_roots = settings.views
-      view_roots.each do |view_root|
-        view_path = File.join(view_root, "#{view}.#{ext}")
-        return true if File.exist?(view_path)
-      end
-      # File not found.
-      false
+      view_root = settings.views
+      view_path = File.join(view_root, "#{view}.#{ext}")
+      File.exist?(view_path)
     end
 
   end
