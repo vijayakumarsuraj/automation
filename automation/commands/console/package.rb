@@ -56,6 +56,7 @@ module Automation
     # @return [Array<String, Automation::Package>]
     def type_test_pack
       require 'automation/packages/test_pack_package'
+      ['Test pack', Automation::TestPackPackage]
     end
 
     # Loop indefinitely prompting for and executing actions.

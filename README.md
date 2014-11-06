@@ -20,7 +20,7 @@ Setup the framework before first use (can be skipped, framework will do this aut
 Setup required features, applications and test packs. These are located in the Packages/ directory.  
 Run the administrative console. Start up the 'package' command and follow prompts.
 
-    ruby main.rb console
+    run console
     $> package
 
 
@@ -28,13 +28,13 @@ Execution
 ---------
 Get a list of supported applications :
 
-    ruby main.rb
+    run
 
 Get a list of supported modes :
 
-    ruby main.rb <application>-modes
+    run <application>-modes
 
 Execute a mode :
 
-    ruby main.rb <application>-<mode> [options]
-    ruby main.rb <application>-<mode> --help
+    run <application>-<mode> [options]
+    run <application>-<mode> --help
