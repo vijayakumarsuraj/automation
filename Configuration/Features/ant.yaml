@@ -1,0 +1,60 @@
+# The configuration file for the 'ant' feature.
+
+# Tool details for Ant.
+tool:
+  ant:
+    home: "${env.ANT_HOME}"
+    executable: "ant.bat"
+    options: []
+
+# Component details for the mode.
+mode:
+  ant:
+    description: "Executes tests in separate processes using Ant."
+    require_file: "ant/runner"
+
+# Ant properties.
+ant:
+  pant:
+    lib: "${feature_directory}/ant/pant-0.9-beta.jar"
+    executor: "org.codeaholics.tools.build.pant.ParallelExecutor"
+    logger: "org.codeaholics.tools.build.pant.ParallelExecutorLogger"
+  script:
+    run_macro: |
+      <macrodef name="run">
+          <attribute name="task" />
+          <attribute name="args" default="" />
+          <attribute name="failonerror" default="false" />
+          <sequential>
+            <exec executable="${:ruby_bin}/ruby.exe" dir="${root_directory_win}" failonerror="@{failonerror}">
+              <arg line="main.rb" />
+              <arg line="${run.application}-single" />
+              <arg line="--task @{task}" />
+              <arg line="@{args}" />
+              <arg line="${:args}" />
+            </exec>
+          </sequential>
+        </macrodef>
+    extension_point: |
+      <extension-point name="${:task_group}" depends="${:depends_on}" />
+    empty_target: |
+      <target name="${:target_name}" depends="${:depends_on}" extensionOf="${:task_group}" />
+    target: |
+      <target name="${:target_name}" depends="${:depends_on}" extensionOf="${:task_group}">
+          <run task="${:task_name}" args="${:args}" failonerror="${:stop_on_failure}" />
+        </target>
+    xml: |
+      <?xml version="1.0" encoding="utf-8"?>
+
+      <project name="${run.config_name}">
+
+        <!-- The number of threads to create per processor. -->
+        <property name="threads" value="1" />
+
+        ${ant.script.run_macro}
+
+      ${:extension_points}
+
+      ${:targets}
+
+      </project>

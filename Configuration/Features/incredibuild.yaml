@@ -1,0 +1,40 @@
+# The configuration file for the 'incredibuild' feature.
+
+# Tool details for IncrediBuild.
+tool:
+  incredibuild:
+    executable: "xgConsole.exe"
+    options: ["/OpenMonitor", "/ShowCmd", "/NoLogo"]
+
+# Component details for the mode.
+mode:
+  incredibuild:
+    description: "Executes tests in separate processes using IncrediBuild."
+    require_file: "incredibuild/runner"
+
+# IncrediBuild properties.
+incredibuild:
+  script:
+    task_group:
+      begin: <TaskGroup Name="${:task_group}" DependsOn="${:depends_on}" StopOnErrors="${:stop_on_failure}">
+      end: </TaskGroup>
+    empty_task: <Task Name="${:task_name}" Caption="${:task_name}" DependsOn="${:depends_on}" Tool="DisabledTask" />
+    local_task: <Task Name="${:task_name}" SourceFile="${:source_file}" Caption="${:task_name}" DependsOn="${:depends_on}" Tool="SingleLocal" StopOnErrors="${:stop_on_failure}" Params="$(inherited:params) ${:params}" />
+    xml: |
+      <?xml version="1.0" encoding="utf-8"?>
+
+      <BuildSet FormatVersion="1">
+        <Environments>
+          <Environment Name="${run.config_name}">
+            <Tools>
+              <Tool Name="SingleLocal" AllowRemote="False" Path="${:ruby_bin}/ruby.exe"
+                    Params="main.rb ${run.application}-single --task $(SourceFileName) ${:args}"
+                    SuccessExitCodes="0" WarningExitCodes="2" />
+              <Tool Name="DisabledTask" AllowRemote="False" Path="rundll32" />
+            </Tools>
+          </Environment>
+        </Environments>
+        <Project Env="${run.config_name}" Name="Automation" WorkingDir="${root_directory_win}">
+      ${:task_groups}
+        </Project>
+      </BuildSet>

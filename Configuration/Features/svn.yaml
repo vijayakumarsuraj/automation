@@ -1,0 +1,6 @@
+# Configuration file for the 'svn' feature.
+
+# Tool details for SNV.
+tool:
+  svn:
+    executable: "svn.exe"

@@ -1,0 +1,13 @@
+# Configuration file for the 'teamcity' feature.
+
+# Enable the team-city observer for all tasks.
+task:
+  observer:
+    team_city: true
+
+# Component details for the observer.
+observer:
+  team_city:
+    require_file: "teamcity/observer"
+    class_name: "TeamCityObserver"
+    singleton: true
