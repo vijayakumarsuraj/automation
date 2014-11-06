@@ -1,0 +1,6 @@
+# Gemfile for the 'allure' feature
+
+# For pretty static HTML reports.
+group :allure do
+  gem 'allure-ruby-adaptor-api'
+end

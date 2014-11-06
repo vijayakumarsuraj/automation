@@ -1,0 +1,6 @@
+# Gemfile for the 'webdriver' feature
+
+# For web automation.
+group :watir do
+  gem 'watir-webdriver'
+end
