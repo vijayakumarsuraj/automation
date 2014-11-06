@@ -176,13 +176,12 @@ module Automation
           end
         end
 
-        # A test sends a 'heartbeat' at regular intervals. If no heartbeat is received for some time,
-        # we update the run property 'hung_tests' so that the web server notifies the user.
+        # A test sends a 'heartbeat' at regular intervals. TODO: If no heartbeat is received for some time,
+        # we do something!
         time_since = (now - test_info.last_update) * 86400 # days to seconds
         time_since_str = Automation::Converter.seconds_to_duration(time_since)
         if time_since > @heartbeat_timeout
           @logger.info("'#{test_name}' might be hung - Last message received #{time_since_str} ago.")
-          # TODO update run property 'hung_tests'.
         end
       end
     end

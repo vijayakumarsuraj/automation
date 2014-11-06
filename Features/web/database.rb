@@ -10,7 +10,7 @@ module Automation
   # Web database. Stores information relating to how the results data is displayed.
   class WebDatabase < Database
 
-    require_relative 'web_database/models'
+    require_relative 'database/models'
 
     # Get the user identified by the specified name.
     #

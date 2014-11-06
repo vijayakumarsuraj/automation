@@ -152,8 +152,8 @@ module Automation
     # @param [Object] default
     # @return [String]
     def scoped_config(application, key, default = nil)
-      app_key = "view.#{application}.#{key}"
-      default_key = "view.#{key}"
+      app_key = "web.#{application}.view.#{key}"
+      default_key = "web.view.#{key}"
       @config_manager.has_property?(app_key) ? @config_manager[app_key] : @config_manager[default_key, default: nil]
     end
 
@@ -163,7 +163,8 @@ module Automation
     # @param [String] application the current application
     # @param [Hash] options hash to pass to the 'partial' method.
     def scoped_partial(file, application, options = {})
-      app_partial = "#{application}/partials/#{file}"
+      dirname, basename = File.split(file)
+      app_partial = "partials/#{dirname}/#{application}.#{basename}"
       default_partial = "partials/#{file}"
       (!application.nil? && view_exist?(app_partial)) ? partial(app_partial, options) : partial(default_partial, options)
     end
@@ -221,10 +222,10 @@ module Automation
     # @param [String] ext the extension for the view file.
     def view_exist?(view, ext = 'haml')
       # Check each view root for the required file.
-      root = settings.root
       view_roots = settings.views
       view_roots.each do |view_root|
-        return true if File.exist?(File.join(root, view_root, "#{view}.#{ext}"))
+        view_path = File.join(view_root, "#{view}.#{ext}")
+        return true if File.exist?(view_path)
       end
       # File not found.
       false

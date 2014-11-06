@@ -10,14 +10,14 @@ require 'sinatra/flash'
 require 'sinatra/partial'
 require 'sinatra/json'
 
-require 'web/helpers/cache_helper'
-require 'web/helpers/database_helpers'
-require 'web/helpers/date_time_helpers'
-require 'web/helpers/diff_helpers'
-require 'web/helpers/run_result_helpers'
-require 'web/helpers/run_result_html_helpers'
-require 'web/helpers/site_helpers'
-require 'web/helpers/test_result_helpers'
+require_relative 'helpers/cache_helper'
+require_relative 'helpers/database_helpers'
+require_relative 'helpers/date_time_helpers'
+require_relative 'helpers/diff_helpers'
+require_relative 'helpers/run_result_helpers'
+require_relative 'helpers/run_result_html_helpers'
+require_relative 'helpers/site_helpers'
+require_relative 'helpers/test_result_helpers'
 
 module Automation
 
@@ -30,7 +30,7 @@ module Automation
     include Automation::Kernel
 
     # Static content types
-    STATIC_MIME_TYPES = {'.out' => 'text/plain', '.bench' => 'text/plain', '.xml' => 'text/xml',
+    STATIC_MIME_TYPES = {'.xml' => 'text/xml',
                          '.log' => 'text/plain', '.txt' => 'text/plain'}
 
     # The automation environment.
@@ -57,41 +57,24 @@ module Automation
     disable :logging
     enable :dump_errors
     # Get the configuration entries from the config manager and apply them now.
-    set :port, config_manager['mode.web.port']
-    set :bind, config_manager['mode.web.host']
-    set :environment, config_manager['mode.web.environment']
-    set :server, config_manager['mode.web.server']
-    set :lock, config_manager['mode.web.lock']
+    set :port, config_manager['web.port']
+    set :bind, config_manager['web.host']
+    set :environment, config_manager['web.environment']
+    set :server, config_manager['web.server']
+    set :lock, config_manager['web.lock']
 
     # Global application properties.
     set :styles, %w(jquery.dataTables.css jquery.qtip.css site.css)
     set :scripts, %w(jquery.js jquery-ui.js jquery.dataTables.js jquery.form.js jquery.qtip.js login.js site.js)
 
-    # App directories.
-    set :root, File.join(FRAMEWORK_ROOT, 'web')
-    set :views, %w(views)
+    # App directories (views and public will resolve relative to this).
+    set :root, File.dirname(__FILE__)
 
-    # Application bootstraps.
-    FileUtils.cd(File.join(config_manager['root_directory'], 'web/applications')) do
-      Dir.glob('*') do |application|
-        env.logger.info("Initialising application '#{application}'...")
-        require File.expand_path(File.join(application, 'init.rb'))
-        settings.views << "applications/#{application}/views"
-      end
-    end
-
-    # Special helper for the views array.
-    helpers do
-      def find_template(views, name, engine, &block)
-        root = settings.root
-        Array(views).each { |v| super(File.join(root, v), name, engine, &block) }
-      end
-    end
   end
 
 end
 
-require 'web/controllers/home'
-require 'web/controllers/error'
-require 'web/controllers/run_config'
-require 'web/controllers/run'
+require_relative 'controllers/home'
+require_relative 'controllers/error'
+require_relative 'controllers/run_config'
+require_relative 'controllers/run'

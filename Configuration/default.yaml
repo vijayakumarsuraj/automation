@@ -90,15 +90,10 @@ mode:
     description: "An interactive console for running administrative tasks."
   janitor:
     description: "Performs general clean-up tasks."
-  # Web server.
-  web:
-    description: "Web server for hosting test results."
 
 # Database properties.
 database:
   results_database:
-    singleton: true
-  web_database:
     singleton: true
 
 result_data:

@@ -12,7 +12,7 @@ module Automation
     #
     # @param [String] run_name
     def cache_delete(run_name)
-      cache_directory = @config_manager['run.cache.directory', parameters: {'run.name' => run_name}]
+      cache_directory = File.join(@config_manager['web.cache.directory'], run_name)
       FileUtils.rmdir(cache_directory) unless File.exist?(cache_directory)
     end
 
@@ -51,7 +51,7 @@ module Automation
       defaults = {mode: 'rb', encoding: Encoding.default_external}
       overrides = defaults.merge(overrides)
       # Create the cached data, if required and read it.
-      cache_directory = @config_manager['run.cache.directory', parameters: {'run.name' => run_name}]
+      cache_directory = File.join(@config_manager['web.cache.directory'], run_name)
       cache_put(cache_directory, file_name, &block)
       FileUtils.cd(cache_directory) { return File.read(file_name, mode: overrides[:mode]) }
     end
@@ -84,7 +84,7 @@ module Automation
     # @param [String] file_name the name of the file.
     # @return [String] the data in the specified file.
     def cache_task_result_get(run_name, task_name, file_name)
-      cache_directory = @config_manager['run.cache.directory', parameters: {'run.name' => run_name}]
+      cache_directory = File.join(@config_manager['web.cache.directory'], run_name)
       zip_file_name = @config_manager['task.results.zip_file_name', parameters: {'task.name' => task_name}]
       # Stream data from the zip file.
       cache_zip_get(cache_directory, zip_file_name, file_name) do

@@ -1,9 +1,0 @@
-# User specific configuration file
-
-tool:
-  7z:
-    executable: "C:/Program Files/7-Zip/7z.exe"
-
-mode:
-  web:
-    port: 18696

@@ -21,19 +21,3 @@ database:
     sandbox:
       adapter: "mysql"
       database: "automation_results_sandbox"
-  # The web database stores information needed for the WebApp Sinatra application.
-  web_database:
-    database_id: "${database.id}"
-    logging: "WARN"
-    # Embedded SQLite3 database for development work.
-    development:
-      adapter: "sqlite"
-      file: "${data.directory}/web.db3"
-    # MySQL database for live results.
-    production:
-      adapter: "mysql"
-      database: "automation_web"
-    # MySQL database for sandbox results.
-    sandbox:
-      adapter: "mysql"
-      database: "automation_web_sandbox"

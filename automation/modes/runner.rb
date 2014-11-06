@@ -167,7 +167,7 @@ module Automation
       super
     end
 
-    # Adds the web specific options.
+    # Adds the runner specific options.
     def create_mode_options
       option_separator
       option_separator 'Runner options:'

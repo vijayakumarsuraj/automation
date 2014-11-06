@@ -19,9 +19,9 @@ module Automation
       @databases = environment.databases
 
       @results_database = @databases.results_database
-      @web_database = @databases.web_database
+      @web_database = @databases['web']
 
-      @link_prefix = @config_manager['mode.web.link_prefix', default: '/']
+      @link_prefix = @config_manager['web.link_prefix', default: '/']
       @link_prefix = "/#{@link_prefix}" unless @link_prefix.start_with?('/')
       @link_prefix = "#{@link_prefix}/" unless @link_prefix.ends_with?('/')
 

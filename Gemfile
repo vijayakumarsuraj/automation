@@ -15,16 +15,6 @@ group :core do
   gem 'mysql2'
 end
 
-# Web server gems - needed only for hosting results.
-group :web do
-  gem 'sinatra'
-  gem 'sinatra-contrib'
-  gem 'sinatra-partial'
-  gem 'sinatra-flash'
-  gem 'thin'
-  gem 'haml'
-end
-
 # Steps into each of the specified directories and attempts to load 'Gemfile'
 #
 # @param [String] directories

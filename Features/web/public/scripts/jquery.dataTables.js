@@ -4833,7 +4833,7 @@
 		/**
 		 * Fire callback functions and trigger events. Note that the loop over the callback
 		 * array store is done backwards! Further note that you do not want to fire off triggers
-		 * in time sensitive applications (for example cell creation) as its slow.
+		 * in time sensitive filters (for example cell creation) as its slow.
 		 *  @param {object} oSettings dataTables settings object
 		 *  @param {string} sStore Name of the array storage for the callbacks in oSettings
 		 *  @param {string} sTrigger Name of the jQuery custom event to trigger. If null no trigger

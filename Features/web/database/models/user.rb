@@ -5,7 +5,7 @@
 
 require 'openssl'
 
-require 'automation/databases/web_database'
+require_relative '../../database'
 
 module Automation
 

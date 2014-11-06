@@ -12,8 +12,6 @@ module Automation
 
     # The results database.
     attr_accessor :results_database
-    # The web database.
-    attr_accessor :web_database
 
     def initialize
       super
@@ -22,8 +20,6 @@ module Automation
       @component_type = Automation::Component::CoreType
 
       @results_database = nil
-      @web_database = nil
-
       @databases = {}
     end
 
@@ -38,9 +34,8 @@ module Automation
     # Iterate over this collection yielding each database in turn.
     # Automatically connects to databases as required.
     def each
-      # First yield the results and web databases.
+      # First yield the results databases.
       yield 'results', @results_database unless @results_database.nil?
-      yield 'web', @web_database unless @web_database.nil?
       # Then all other databases.
       @databases.each_key do |key|
         db = get_database(key)
