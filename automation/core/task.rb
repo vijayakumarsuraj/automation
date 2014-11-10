@@ -16,13 +16,9 @@ module Automation
   # A task represents the most basic unit of work the framework can carry out.
   class Task < Component
 
-    # Allows this task to report changes to any registered observers.
-    include Observable
     # Makes this task a runnable.
     include Automation::Runnable
 
-    # The result of executing this task - initially set to unknown.
-    attr_reader :result
     # If true, this task will persist its results to the results database.
     attr_accessor :persist
 
@@ -40,14 +36,6 @@ module Automation
       @results_database = @databases.results_database
     end
 
-    # Notifies a change to all registered observers.
-    #
-    # @param [Array] args the arguments to pass to the registered observers.
-    def notify_change(method, *args)
-      changed
-      notify_observers(method, self, *args)
-    end
-
     # Get the process ID of this task.
     #
     # @return [String, Integer] the PID.
@@ -60,13 +48,6 @@ module Automation
     # @param [String, Integer] pid the PID.
     def update_pid(pid)
       @config_manager.add_override_property('task.pid', pid, overwrite: true)
-    end
-
-    # Updates the result of this task. Results can only go from less severe to more severe.
-    #
-    # @param [Result] new_result the new result.
-    def update_result(new_result)
-      @result = new_result if new_result > @result
     end
 
     private
@@ -92,30 +73,6 @@ module Automation
       @logger.error(format_exception(ex))
     end
 
-    # Loads all observers for this task.
-    def load_observers(observers = [])
-      # Observers to be enabled for all tasks.
-      run_observers = @config_manager.get_child?('task.observer')
-      run_observers = run_observers ? run_observers.map_child { |child| [child.name, child.value] } : []
-      # Observers to be enabled for this task.
-      task_observers = @config_manager.get_child?("task.#{@component_name}.observer")
-      task_observers = task_observers ? task_observers.map_child { |child| [child.name, child.value] } : []
-      # Combined list of all observers.
-      all_observers = Hash.new { |h, k| h[k] = true }
-      (run_observers + task_observers + observers).each { |name, value| all_observers[name] = (all_observers[name] && value) }
-      # Load up each observer that was enabled.
-      all_observers.each_pair do |name, value|
-        if value
-          begin
-            add_observer(load_component(Component::ObserverType, name))
-          rescue
-            @logger.warn("Observer '#{name}' failed to start.")
-            @logger.debug(format_exception($!))
-          end
-        end
-      end
-    end
-
     # Executed before the task runs.
     # By default, all configured observers are loaded.
     def setup
@@ -127,7 +84,7 @@ module Automation
         @task_result = @results_database.create_task_result(@run_result, @task_entity)
       end
 
-      load_observers([])
+      load_observers('task', [])
     end
 
     # Executed after the task runs (if there were no exceptions).

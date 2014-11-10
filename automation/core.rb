@@ -133,12 +133,12 @@ module Automation
       end
 
       appender('stdout') do
-        level config_manager['logging.level']
+        level config_manager['logging.console.level']
         type 'Stdout'
         layout do
           type 'Pattern'
-          pattern config_manager['logging.pattern']
-          date_pattern DateTimeFormat::DATE_TIME_WITH_TIMEZONE_MILLISECOND
+          pattern config_manager['logging.console.pattern']
+          date_pattern config_manager['logging.console.date_pattern']
         end
       end
     end
@@ -157,7 +157,7 @@ module Automation
     FileUtils.cd(FRAMEWORK_ROOT) do
       config_manager = environment.config_manager
       config_manager.load_configuration('default', 'Configuration/default.yaml')
-      config_manager.load_configuration('feature', *Dir.glob('Configuration/Features/*.yaml'))
+      config_manager.load_configuration('feature', *Dir.glob("Configuration/#{Automation::FET_DIR}/*.yaml"))
       config_manager.add_configuration('application-default', Configuration::SimpleConfiguration.new)
       config_manager.add_configuration('mode', Configuration::SimpleConfiguration.new)
       config_manager.add_configuration('application-mode', Configuration::SimpleConfiguration.new)

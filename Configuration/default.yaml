@@ -11,14 +11,16 @@ tool:
     executable: "7z.exe"
 
 logging:
-  level: "DEBUG"
-  pattern : "[%d] %-5l -- %c (%x) : %m\\n"
+  console:
+    level: "DEBUG"
+    pattern : "[%d] %-5l -- %c (%x) : %m\\n"
+    date_pattern: "%d-%b-%Y %H:%M:%S.%L %z"
+  file:
+    pattern: "[%d] %-5l -- %c (%x) : %m\\n"
+    date_pattern: "%d-%b-%Y %H:%M:%S.%L %z"
 
 data:
   directory: "${root_directory}/Data"
-
-package:
-  directory: "${root_directory}/Packages"
 
 temp:
   directory: "${data.directory}/Temp"
@@ -112,7 +114,7 @@ task:
 
   test_runner:
     depends_on: []
-    observer:
+    observers:
       test_monitor: true
   finaliser:
     depends_on: []

@@ -38,14 +38,6 @@ module Automation
       @mutex.synchronize do
         # Generate the Allure XML report.
         @builder.build!
-        # Generate the Allure HTML report off the XML report.
-        @logger.info('Generating allure report...')
-        allure_bat = @config_manager['tool.allure.executable']
-        output_directory = @config_manager['allure.output.directory']
-        args = ['generate', '-o', output_directory, output_directory]
-        output, status = popen_capture(allure_bat, *args)
-        @logger.fine("Allure messages\n#{output}")
-        raise ExecutionError.new('Allure encountered errors.') if status.exitstatus != 0
       end
     end
 

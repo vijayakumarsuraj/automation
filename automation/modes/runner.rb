@@ -147,7 +147,7 @@ module Automation
       @runner_target = @config_manager['mode.runner.target']
 
       # Load observers and notify that the run is about to start.
-      load_observers([], true)
+      load_observers('mode', [])
       notify_change('runner_started')
     end
 

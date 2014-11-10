@@ -9,5 +9,5 @@ task:
 observer:
   team_city:
     require_file: "teamcity/observer"
-    class_name: "TeamCityObserver"
+    class_name: "TeamcityObserver"
     singleton: true

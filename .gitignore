@@ -8,7 +8,7 @@
 /nbproject/
 
 # Generated env configurator.
-/env.bat
+/Bin/env.bat
 
 # User configuration file.
 /Configuration/user.yaml

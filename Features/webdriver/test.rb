@@ -47,6 +47,16 @@ module Automation
         @browser.close unless @browser.nil?
       end
 
+      # Starts a new step.
+      #
+      # @param [String] step_name
+      # @param [Proc] block
+      def step(step_name, &block)
+        @runner.notify_change('test_step_started', step_name)
+        status = yield
+        @runner.notify_change('test_step_finished', step_name, status ? :passed : :failed)
+      end
+
     end
 
   end

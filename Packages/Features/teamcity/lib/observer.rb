@@ -8,7 +8,7 @@ require 'automation/core/observer'
 module Automation
 
   # The TeamCity observer.
-  class TeamCityObserver < Observer
+  class TeamcityObserver < Observer
 
     # New TeamCity observer.
     def initialize

@@ -4,20 +4,25 @@
 # Requires JAVA_HOME be set.
 tool:
   allure:
-    executable: "${root_directory}/Features/allure/bin/allure.bat"
+    executable: "${features_directory}/allure/bin/allure.bat"
 
 # Allure configuration.
 allure:
   output:
-    directory: "${run.working.directory}/allure"
+    directory: "${run.result.directory}/allure"
 
 # Enable the allure observer for all tasks, except for the task 'manager'.
 task:
-  observer:
+  observers:
     allure: true
   manager:
-    observer:
+    observers:
       allure: false
+
+# Enable the allure observer for all modes.
+mode:
+  observers:
+    allure: true
 
 # Enable the allure manager service.
 manager:

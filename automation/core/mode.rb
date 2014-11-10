@@ -3,13 +3,13 @@
 # 08 Jan 2013
 #
 
-require 'automation/core/task'
+require 'automation/core/component'
 
 module Automation
 
   # Represents a mode that the framework can be executed in. Modes are self-sufficient tasks.
   # Each mode must provide a custom implementation of this base class.
-  class Mode < Task
+  class Mode < Component
 
     # Returns a list of parent mode names for this mode.
     #
@@ -137,6 +137,9 @@ module Automation
 
     # Include the default command line options.
     include Automation::Mode::CommandLineOptions
+    # Makes this runnable.
+    include Automation::Runnable
+
 
     # Accessor for the list of non-option arguments provided on the command lien.
     attr_reader :cl_non_options
@@ -145,6 +148,7 @@ module Automation
     def initialize
       super
 
+      @result = Automation::Result::Pass
       @cl_parser = OptionParser.new(FRAMEWORK_TITLE, 40)
       @cl_options = @config_manager.get_configuration('command-line')
       @cl_propagate = []
@@ -152,8 +156,8 @@ module Automation
 
       @component_type = Automation::Component::ModeType
       @raise_exceptions = false
-      @persist = false
       @archive_results = false
+      @databases = environment.databases
 
       environment.save(:mode, self)
     end
@@ -164,16 +168,17 @@ module Automation
     # 1. Close the file appender used by this mode.
     # 2. Zip and archive the run results.
     def cleanup
-      super
-      #
       close_file_appender
       archive_run_result if (defined? @results_archive) && @archive_results
     end
 
-    # Modes don't need to load observers - except for 'Runners'.
-    # And they need to be loaded much later than usual.
-    def load_observers(observers = [], force = false)
-      super(observers) if force
+    # Executed if there are exceptions.
+    # By default, logs the error and re-raises it.
+    #
+    # @param [Exception] ex the exception.
+    def exception(ex)
+      update_result(Automation::Result::Exception)
+      @logger.error(format_exception(ex))
     end
 
     # The following steps are carried out (in no particular order):
@@ -218,8 +223,6 @@ module Automation
       load_test_pack
       configure_test_pack
       create_file_appender
-      #
-      super
     end
 
     # Adds standard properties that all modes need.
@@ -278,8 +281,8 @@ module Automation
 
     # Configures the logger so that logs are sent to the required log file.
     def create_file_appender
-      pattern = '[%d] %-5l -- %c (%x) : %m\n'
-      date_pattern = DateTimeFormat::DATE_TIME_WITH_TIMEZONE_MILLISECOND
+      pattern = @config_manager['logging.file.pattern']
+      date_pattern = @config_manager['logging.file.date_pattern']
       layout = Logging::Layouts::Pattern.new(pattern: pattern, date_pattern: date_pattern)
       #
       run_result_directory = @config_manager['run.result.directory']

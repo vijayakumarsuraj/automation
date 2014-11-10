@@ -163,8 +163,10 @@ module Automation
     # @param [String] application the current application
     # @param [Hash] options hash to pass to the 'partial' method.
     def scoped_partial(file, application, options = {})
-      app_partial = "partials/#{application}.#{file}"
-      default_partial = "partials/#{file}"
+      dir_name, file_name = File.split(file)
+      app_file_name = "#{application}.#{file_name}"
+      app_partial = File.join('partials', dir_name, app_file_name)
+      default_partial = File.join('partials', dir_name, file_name)
       (!application.nil? && view_exist?(app_partial)) ? partial(app_partial, options) : partial(default_partial, options)
     end
 

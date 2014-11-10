@@ -89,6 +89,19 @@ module Automation
       @zip_file.extract(file_name, dest_path)
     end
 
+    # Extracts the contents of a directory from this result data.
+    #
+    # @param [String] dir_name
+    # @param [String] dest
+    def extract_dir(dir_name, dest)
+      @zip_file.glob("#{dir_name}/*") do |entry|
+        dest_path = File.join(dest, entry.name)
+        dest_dir = File.dirname(dest_path)
+        FileUtils.mkdir_p(dest_dir) unless File.exist?(dest_dir)
+        @zip_file.extract(entry, dest_path)
+      end
+    end
+
     # Get the contents of the specified file from this result data.
     #
     # @param [String] file_name the name of the file.

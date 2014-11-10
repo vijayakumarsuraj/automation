@@ -16,6 +16,19 @@ module Automation
       FileUtils.rmdir(cache_directory) unless File.exist?(cache_directory)
     end
 
+    # Extracts and caches the specified directory.
+    #
+    # @param [String] run_name
+    # @param [String] dir_name
+    def cache_extract_dir(run_name, dir_name)
+      cache_directory = File.join(@config_manager['web.cache.directory'], run_name)
+      unless File.directory?(File.join(cache_directory, dir_name))
+        run_result_data = @results_archive.get_run_result(run_name)
+        run_result_data.extract_dir(dir_name, cache_directory)
+      end
+      File.join(cache_directory, dir_name)
+    end
+
     # Puts data into the cache, unless a file with the specified name already exists.
     #
     # @param [String] directory the directory containing the cache data.
