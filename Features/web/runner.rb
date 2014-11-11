@@ -139,14 +139,27 @@ module Automation
       applications_directory = @config_manager['applications_directory']
       FileUtils.cd(applications_directory) do
         Dir.glob('*') do |application|
-          app_web_directory = File.join(applications_directory, application, 'web')
+          app_web_directory = File.join(applications_directory, application, '.web')
           next unless File.exist?(app_web_directory) # Skip if the application doesn't have any web code.
+          @logger.debug("Including application '#{application}'")
           app_files += glob_files_to_deploy(app_web_directory)
+        end
+      end
+      # Finally glob all the files from each feature's web directory.
+      feature_files = []
+      features_directory = @config_manager['features_directory']
+      FileUtils.cd(features_directory) do
+        Dir.glob('*') do |feature|
+          feature_web_directory = File.join(features_directory, feature, '.web')
+          next if feature.eql?('web') # Skip the 'web' directory too.
+          next unless File.exist?(feature_web_directory) # Skip if the feature doesn't have any web code.
+          @logger.debug("Including feature '#{application}'")
+          feature_files += glob_files_to_deploy(feature_web_directory)
         end
       end
 
       # Copy each of the files. Overwriting only those that are newer.
-      background(core_files + app_files, WAIT_FOR_RESULT) do |dir, file|
+      background(core_files + app_files + feature_files, WAIT_FOR_RESULT) do |dir, file|
         dest = File.join(directory, file)
         src = File.join(dir, file)
         if File.exist?(dest) && (File.mtime(src) <= File.mtime(dest))
