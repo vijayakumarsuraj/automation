@@ -86,6 +86,62 @@ module Automation
 
   end
 
+  class AndAssertion < Assertion
+
+    # New and assertion.
+    #
+    # @param [Array<Automation::Assertion>] assertions
+    def initialize(*assertions)
+      @assertions = assertions
+    end
+
+    def check
+      passed_assertions = []
+      failed_assertions = []
+
+      @assertions.each do |assertion|
+        assertion.check ? (passed_assertions << assertion.message) : (failed_assertions << assertion.message)
+      end
+
+      if failed_assertions.length > 0
+        @message = "One or more assertions failed:\n#{failed_assertions.join("\n")}"
+        false
+      else
+        @message = "All assertions passed:\n#{passed_assertions.join("\n")}"
+        true
+      end
+    end
+
+  end
+
+  class OrAssertion < Assertion
+
+    # New or assertion.
+    #
+    # @param [Array<Automation::Assertion>] assertions
+    def initialize(*assertions)
+      @assertions = assertions
+    end
+
+    def check
+      passed_assertions = []
+      failed_assertions = []
+
+      @assertions.each do |assertion|
+        assertion.check ? (passed_assertions << assertion.message) : (failed_assertions << assertion.message)
+      end
+
+      if passed_assertions.length > 0
+        @message = "One or more assertions passed:\n#{passed_assertions.join("\n")}"
+        true
+      else
+        @message = "All assertions failed:\n#{failed_assertions.join("\n")}"
+        false
+      end
+    end
+
+  end
+
   # Assertions supported by the 'assert' method.
   module Assertions
 
@@ -116,6 +172,22 @@ module Automation
     # @return [Automation::NotAssertion] the 'not' assertion.
     def not(assertion)
       NotAssertion.new(assertion)
+    end
+
+    # Assertion for logically ANDing assertions.
+    #
+    # @param [Array<Assertion>] assertions
+    # @return [Automation::AndAssertion]
+    def all(*assertions)
+      AndAssertion.new(*assertions)
+    end
+
+    # Assertion for logically ORing assertions.
+    #
+    # @param [Array<Assertion>] assertions
+    # @return [Automation::OrAssertion]
+    def one(*assertions)
+      OrAssertion.new(*assertions)
     end
 
   end

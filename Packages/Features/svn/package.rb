@@ -6,15 +6,14 @@ module Automation
 
   class SvnPackage < Automation::FeaturePackage
 
+    def initialize
+      super('svn')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'svn'
-
-      lib('lib', 'svn_info.rb', 'svn_log.rb', 'svn_repo.rb')
-      conf('conf', 'svn.yaml')
-
       super
     end
 

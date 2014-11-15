@@ -38,9 +38,9 @@ module Automation
     def connect
       return if @connected
 
+      @logger.info('Connecting...')
       @logger.level = db_config('logging', default: @config_manager["database.#{@component_name}.logging"])
       # Establish the connection.
-      @logger.debug('Connecting...')
       base_model.logger = @logger
       base_model.establish_connection(@connection_config)
       # Mark as connected.
@@ -72,10 +72,12 @@ module Automation
       ActiveRecord::Base.establish_connection(@connection_config)
       ActiveRecord::Migration.verbose = false
       # Migrate using the framework's migrations first.
+      @logger.fine('Running core migrations...')
       path = File.join(FRAMEWORK_ROOT, "automation/databases/#{@component_name}/migrations")
       ActiveRecord::Migrator.migrate(path, version)
       # Then the application's migrations.
       application = @config_manager['run.application']
+      @logger.fine("Running #{application} migrations...")
       path = File.join(FRAMEWORK_ROOT, APP_DIR, "#{application}/databases/#{@component_name}/migrations")
       ActiveRecord::Migrator.migrate(path, version)
 

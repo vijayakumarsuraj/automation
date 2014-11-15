@@ -1,0 +1,7 @@
+# Gemfile for the 'sqlserver' feature
+
+# For storing data using SqlServer.
+group :sqlserver do
+  gem 'tiny_tds'
+  gem 'activerecord-sqlserver-adapter'
+end

@@ -6,16 +6,14 @@ module Automation
 
   class ExcelPackage < Automation::FeaturePackage
 
+    def initialize
+      super('excel')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'excel'
-
-      lib('lib', 'excel_data.rb', 'excel_methods.rb')
-      lib('lib', 'macros')
-      conf('conf', 'excel.yaml')
-
       super
     end
 

@@ -6,16 +6,14 @@ module Automation
 
   class AllurePackage < Automation::FeaturePackage
 
+    def initialize
+      super('allure')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'allure'
-
-      lib('lib', 'builder.rb', 'observer.rb', 'service.rb', 'Gemfile')
-      lib('lib', 'bin', 'lib')
-      conf('conf', 'allure.yaml')
-
       super
     end
 

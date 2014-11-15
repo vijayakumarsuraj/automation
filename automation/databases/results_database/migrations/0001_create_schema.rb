@@ -14,7 +14,6 @@ class CreateSchema < ActiveRecord::Migration
     change_applications_table
     change_change_events_table
 
-    change_vcs_repos_table
     change_run_configs_table
     change_run_properties_table
     change_run_results_table
@@ -42,15 +41,6 @@ class CreateSchema < ActiveRecord::Migration
 
     add_index :change_events, [:test_id]
     add_index :change_events, [:run_result_id]
-  end
-
-  def change_vcs_repos_table
-    create_table :vcs_repos do |t|
-      t.column :url, :string, limit: 4097
-      t.column :vcs_type, :string, limit: 255
-      t.column :username, :string, limit: 255
-      t.column :password, :string, limit: 255
-    end
   end
 
   def change_run_configs_table

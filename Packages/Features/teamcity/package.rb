@@ -6,15 +6,14 @@ module Automation
 
   class TeamcityPackage < Automation::FeaturePackage
 
+    def initialize
+      super('teamcity')
+    end
+    
     private
 
     # Defines this package.
     def define
-      self.name = 'teamcity'
-
-      lib('lib', 'observer.rb')
-      conf('conf', 'teamcity.yaml')
-
       super
     end
 

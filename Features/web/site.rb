@@ -10,7 +10,7 @@ require 'sinatra/flash'
 require 'sinatra/partial'
 require 'sinatra/json'
 
-require_relative 'helpers/cache_helper'
+require_relative 'helpers/cache_helpers'
 require_relative 'helpers/database_helpers'
 require_relative 'helpers/date_time_helpers'
 require_relative 'helpers/diff_helpers'

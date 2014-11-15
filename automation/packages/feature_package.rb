@@ -11,8 +11,10 @@ module Automation
   class FeaturePackage < Automation::Package
 
     # New feature package.
-    def initialize
-      super
+    def initialize(name)
+      @name = name
+
+      super()
 
       @base = @config_manager['features_directory']
     end
@@ -21,21 +23,28 @@ module Automation
 
     # Defines the files all packages MUST have.
     def define
-      file('.', "#{Automation::FET_DIR}/#{@name}", 'package.rb')
+      lib('lib', '*', 'package.rb')
+      conf('conf', "#{@name}.yaml")
+
+      super
     end
 
     # Define a file for the framework's 'Configuration' directory.
     #
-    # @param [Array<String>] files
-    def conf(package_dir, *files)
-      file(package_dir, "Configuration/#{Automation::FET_DIR}", *files)
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def conf(package_dir, include, exclude = '')
+      files(package_dir, "Configuration/#{Automation::FET_DIR}", include, exclude)
     end
 
     # Define feature code files.
     #
-    # @param [Array<String>] files
-    def lib(package_dir, *files)
-      file(package_dir, "#{Automation::FET_DIR}/#{@name}", *files)
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def lib(package_dir, include, exclude = '')
+      files(package_dir, "#{Automation::FET_DIR}/#{@name}", include, exclude)
     end
 
   end

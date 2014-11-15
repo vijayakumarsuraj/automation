@@ -17,7 +17,7 @@ Setup the framework before first use (can be skipped, framework will do this aut
 
     ruby main.rb setup
     
-Setup required features, applications and test packs. These are located in the Packages/ directory.  
+Setup required features. These are located in the Packages/Features directory.
 Run the administrative console. Start up the 'package' command and follow prompts.
 
     run console

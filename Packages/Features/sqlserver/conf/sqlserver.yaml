@@ -1,0 +1,14 @@
+# The properties for connecting to the framework's databases.
+
+database:
+  id: "sandbox"
+
+  default_dataserver: "localhost"
+  # The results database stores details of each run executed by the framework.
+  results_database:
+    # SQL Server database for live results.
+    production:
+      adapter: "sqlserver"
+    # SQL Server database for sandbox results.
+    sandbox:
+      adapter: "sqlserver"

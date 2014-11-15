@@ -99,11 +99,24 @@ module Automation
     expanded
   end
 
+  # Initialises all installed features.
+  def self.initialise_features
+    FileUtils.cd(File.join(FRAMEWORK_ROOT, FET_DIR)) do
+      Dir.glob('*') do |feature|
+        init_file = "#{feature}/init.rb"
+        next unless File.exist?(init_file)
+
+        environment.logger.debug("Initialising feature '#{feature}'...")
+        require init_file
+      end
+    end
+  end
+
   # Gets a list of supported application names.
   #
   # @return [Array<String>] the list of supported applications.
   def self.supported_applications
-    FileUtils.cd(File.join(FRAMEWORK_ROOT, 'Applications')) { return Dir.glob('*') }
+    FileUtils.cd(File.join(FRAMEWORK_ROOT, APP_DIR)) { return Dir.glob('*') }
   end
 
   # Gets a list of modes supported for the specified application.

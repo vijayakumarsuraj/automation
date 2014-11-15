@@ -3,10 +3,15 @@
 # 06 Dec 2012
 #
 
+require 'util/chained_error'
+
 module Configuration
 
   # General configuration error.
   class ConfigurationError < RuntimeError
+
+    include Util::ChainedError
+
   end
 
   # Raised when interpolation fails.

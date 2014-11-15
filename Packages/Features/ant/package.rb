@@ -6,14 +6,14 @@ module Automation
 
   class AntPackage < Automation::FeaturePackage
 
+    def initialize
+      super('ant')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'ant'
-
-      lib('lib', 'runner.rb')
-      conf('conf', 'ant.yaml')
       bin('bin', 'ant.bat')
       
       super

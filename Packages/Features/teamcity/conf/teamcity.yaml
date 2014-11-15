@@ -2,7 +2,12 @@
 
 # Enable the team-city observer for all tasks.
 task:
-  observer:
+  observers:
+    team_city: true
+
+# Enable the team-city observer for all modes.
+mode:
+  observers:
     team_city: true
 
 # Component details for the observer.

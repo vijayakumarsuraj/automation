@@ -11,8 +11,10 @@ module Automation
   class TestPackPackage < Automation::Package
 
     # New test pack package.
-    def initialize
-      super
+    def initialize(name)
+      @name = name
+
+      super()
 
       @base = @config_manager['test_packs.directory']
     end
@@ -21,14 +23,16 @@ module Automation
 
     # Defines the files all packages MUST have.
     def define
-      file('.', "#{@base}/#{@name}", 'package.rb')
+      lib('.', 'package.rb')
     end
 
     # Define test pack code / configuration files.
     #
-    # @param [Array<String>] files
-    def lib(package_dir, *files)
-      file(package_dir, File.join(@base, @name), *files)
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def lib(package_dir, include, exclude = '')
+      files(package_dir, File.join(@base, @name), include, exclude)
     end
 
   end

@@ -33,6 +33,11 @@ module Automation
         @cl_parser.on('--pick-test-type TYPE', 'Equivalent to the above option for the key "type".', &block)
       end
 
+      def option_database
+        block = proc { save_option_value('database.results_database.recreate', true) }
+        @cl_parser.on('--results-database-recreate', 'Drop the database schema and then re-create it (all data will be lost!).', &block)
+      end
+
     end
 
     # Provides task group specific methods.
@@ -171,6 +176,7 @@ module Automation
     def create_mode_options
       option_separator
       option_separator 'Runner options:'
+      option_database
       option_trigger
       option_filter
     end

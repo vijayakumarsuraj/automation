@@ -25,23 +25,6 @@ module Automation
 
   end
 
-  # Methods for working with Oracle databases.
-  module OracleDatabaseMethods
-
-    # Connection configuration for an Oracle database.
-    #
-    # @param [Hash] defaults default configuration options.
-    # @return [Hash] the connection config.
-    def db_oracle_connection_config(defaults)
-      database = db_config('database')
-      username = db_config('username', default: 'framework')
-      password = db_config('password', default: 'framework')
-      defaults.merge(adapter: 'oracle_enhanced', database: database,
-                     username: username, password: password)
-    end
-
-  end
-
   # Methods for working with SQLite3 databases.
   module SQLiteDatabaseMethods
 
@@ -63,7 +46,6 @@ module Automation
   module DatabaseMethods
 
     include MySQLDatabaseMethods
-    include OracleDatabaseMethods
     include SQLiteDatabaseMethods
 
     # Gets the connection configuration for the current database.

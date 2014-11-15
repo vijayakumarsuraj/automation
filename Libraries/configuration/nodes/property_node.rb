@@ -72,7 +72,7 @@ module Configuration
           interpolator = Interpolator.instance
           interpolator.interpolate_property(self, context, parameters)
         rescue KeyError, InterpolationError => ex
-          raise ex.class.new("#{self} -> #{ex.message}")
+          raise ex.class.new("#{self} -> #{ex.message}", ex)
         end
       else
         @value

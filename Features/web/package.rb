@@ -6,15 +6,14 @@ module Automation
 
   class WebPackage < Automation::FeaturePackage
 
+    def initialize
+      super('web')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'web'
-
-      lib('lib', 'database.rb', 'runner.rb', 'site.rb', 'Gemfile')
-      lib('lib', 'controllers', 'database', 'helpers', 'public', 'views')
-      conf('conf', 'web.yaml')
       bin('bin', 'web.bat')
 
       super

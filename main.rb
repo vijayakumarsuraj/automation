@@ -97,6 +97,7 @@ end
 
 # Configure the framework.
 Automation.configure(application, mode)
+Automation.initialise_features
 include Automation::Kernel
 
 # Load the required mode and start it.

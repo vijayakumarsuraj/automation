@@ -11,8 +11,10 @@ module Automation
   class ApplicationPackage < Automation::Package
 
     # New application package.
-    def initialize
-      super
+    def initialize(name)
+      @name = name
+
+      super()
 
       @base = @config_manager['applications_directory']
     end
@@ -20,15 +22,18 @@ module Automation
     private
 
     # Defines the files all packages MUST have.
+    # Implementations refine this method further.
     def define
-      file('.', "#{Automation::APP_DIR}/#{@name}", 'package.rb')
+      lib('.', 'package.rb')
     end
 
     # Define application code / configuration files.
     #
-    # @param [Array<String>] files
-    def lib(package_dir, *files)
-      file(package_dir, "#{Automation::APP_DIR}/#{@name}", *files)
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def lib(package_dir, include, exclude = '')
+      files(package_dir, "#{Automation::APP_DIR}/#{@name}", include, exclude)
     end
 
   end

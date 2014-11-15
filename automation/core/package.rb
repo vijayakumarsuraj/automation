@@ -27,7 +27,6 @@ module Automation
 
       @base = nil
       @root = Automation::FRAMEWORK_ROOT
-      @name = nil
       @items = []
 
       define
@@ -38,73 +37,107 @@ module Automation
     # @param [String] from
     def install(from)
       uninstall
-
-      @items.each { |items, to, package_dir| copy(File.join(from, package_dir), items, File.expand_path(to, @root)) }
-      FileUtils.touch(File.join(@root, 'Gemfile')) # So that the framework sets up it's gems the next time.
+      # Copy all defined items into the framework.
+      @items.each do |package_dir, to, include, exclude|
+        from_path = File.join(from, package_dir)
+        to_path = File.expand_path(to, @root)
+        copy(from_path, include, exclude, to_path)
+      end
+      # So that the framework sets up it's gems the next time.
+      FileUtils.touch(File.join(@root, 'Gemfile'))
     end
 
     # Creates this package.
     #
     # @param [String] to
     def package(to)
-      @items.each { |items, from, package_dir| copy(File.expand_path(from, @root), items, File.join(to, @name, package_dir)) }
+      @items.each do |package_dir, from, include, exclude|
+        from_path = File.expand_path(from, @root)
+        to_path = File.join(to, @name, package_dir)
+        copy(from_path, include, exclude, to_path)
+      end
     end
 
     # Uninstalls the package.
     def uninstall
-      @items.each { |items, from, _| delete(File.expand_path(from, @root), items) } # Explicitly defined files.
-      delete(@base, [@name]) # And the root directory.
-      FileUtils.touch(File.join(@root, 'Gemfile')) # So that the framework sets up it's gems the next time.
+      # Delete all explicitly defined files.
+      @items.each do |_, from, include, exclude|
+        from_path = File.expand_path(from, @root)
+        delete(from_path, include)
+      end
+      # And the root directory.
+      delete(@base, @name)
+      # So that the framework sets up it's gems the next time.
+      FileUtils.touch(File.join(@root, 'Gemfile'))
     end
 
     private
 
+    # Defines code files - must be provided by implementations.
+    #
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def lib(package_dir, include, exclude = '')
+      raise NotImplementedError.new("Method 'lib' not implemented by '#{self.class.name}'")
+    end
+
     # Defines the files contained in this package. Implementations must provide this method.
     def define
-      raise NotImplementedError.new("Method 'define' not implemented for '#{self.class.name}'")
+      lib('.', 'package.rb')
     end
 
     # Define a file for the framework's 'Bin' directory.
     #
-    # @param [Array<String>] files
-    def bin(package_dir, *files)
-      file(package_dir, 'Bin', *files)
+    # @param [String] package_dir
+    # @param [String] include
+    # @param [String] exclude
+    def bin(package_dir, include, exclude = '')
+      files(package_dir, 'Bin', include, exclude)
     end
 
     # Copies files.
     #
     # @param [String] from
-    # @param [Array<String>] files
+    # @param [String] include
+    # @param [String] exclude
     # @param [String] to
-    def copy(from, files, to)
+    def copy(from, include, exclude, to)
       FileUtils.mkdir_p(to)
-      FileUtils.cd(from) { files_copy(files, to) }
+      FileUtils.cd(from) do
+        files_include = Dir.glob(include)
+        files_exclude = Dir.glob(exclude)
+        files_copy(files_include - files_exclude, to)
+      end
     end
 
     # Deletes files.
     #
     # @param [String] from
-    # @param [Array<String>] files
-    def delete(from, files)
+    # @param [String] pattern
+    def delete(from, pattern)
       return unless File.exist?(from)
 
-      @logger.debug("Deleting #{files.length} items from '#{from}'")
       FileUtils.cd(from) do
+        files = Dir.glob(pattern)
+        return if files.length == 0
+
+        @logger.debug("Deleting #{files.length} items from '#{from}'")
         files.each do |file|
-          next unless File.exist?(file)
           @logger.fine("Deleting '#{file}'...")
           FileUtils.rm_r(file)
         end
       end
     end
 
-    # Adds a file that needs to be processed.
+    # Adds files that need to be processed.
     #
     # @param [String] package_dir
     # @param [String] framework_dir
-    # @param [Array<String>] files
-    def file(package_dir, framework_dir, *files)
-      @items << [files, framework_dir, package_dir]
+    # @param [String] include_pattern
+    # @param [String] exclude_pattern
+    def files(package_dir, framework_dir, include_pattern, exclude_pattern = '')
+      @items << [package_dir, framework_dir, include_pattern, exclude_pattern]
     end
 
   end

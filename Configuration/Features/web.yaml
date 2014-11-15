@@ -43,13 +43,13 @@ database:
     logging: "WARN"
     # Embedded SQLite3 database for development work.
     development:
-      adapter: "sqlite"
+      adapter: "${database.results_database.development.adapter}"
       file: "${data.directory}/web.db3"
     # MySQL database for live results.
     production:
-      adapter: "mysql"
+      adapter: "${database.results_database.production.adapter}"
       database: "automation_web"
     # MySQL database for sandbox results.
     sandbox:
-      adapter: "mysql"
+      adapter: "${database.results_database.sandbox.adapter}"
       database: "automation_web_sandbox"

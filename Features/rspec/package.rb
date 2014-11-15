@@ -6,15 +6,14 @@ module Automation
 
   class RspecPackage < Automation::FeaturePackage
 
+    def initialize
+      super('rspec')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'rspec'
-
-      lib('lib', 'runner.rb')
-      conf('conf', 'rspec.yaml')
-
       super
     end
 

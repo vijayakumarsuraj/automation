@@ -35,10 +35,17 @@ module Automation
 
     # Notify Allure that testing has finished.
     def allure_stop
-      @mutex.synchronize do
-        # Generate the Allure XML report.
-        @builder.build!
-      end
+      @mutex.synchronize { @builder.build! }
+    end
+
+    # Notify allure that something needs to be attached to it.
+    #
+    # @param [String] suite_name
+    # @param [String] test_name
+    # @param [Hash] opts
+    def allure_add_attachment(suite_name, test_name, file, opts = {})
+      opts[:file] = File.new(file, 'r')
+      @mutex.synchronize { @builder.add_attachment(suite_name, test_name, opts) }
     end
 
     # Notify Allure that a test has started.

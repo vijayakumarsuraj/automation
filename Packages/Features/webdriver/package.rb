@@ -6,15 +6,14 @@ module Automation
 
   class WebdriverPackage < Automation::FeaturePackage
 
+    def initialize
+      super('webdriver')
+    end
+
     private
 
     # Defines this package.
     def define
-      self.name = 'webdriver'
-
-      lib('lib', 'page.rb', 'test.rb', 'Gemfile')
-      conf('conf', 'webdriver.yaml')
-
       super
     end
 

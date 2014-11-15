@@ -153,7 +153,7 @@ module Automation
           feature_web_directory = File.join(features_directory, feature, '.web')
           next if feature.eql?('web') # Skip the 'web' directory too.
           next unless File.exist?(feature_web_directory) # Skip if the feature doesn't have any web code.
-          @logger.debug("Including feature '#{application}'")
+          @logger.debug("Including feature '#{feature}'")
           feature_files += glob_files_to_deploy(feature_web_directory)
         end
       end

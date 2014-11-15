@@ -48,15 +48,6 @@ module Automation
         block = proc { |database| save_option_value('database.results_database.database_id', database); propagate_option('--results-database', database) }
         @cl_parser.on('--results-database ID', 'Specify the id of the database to use.',
                       'If skipped, the default specified for the mode is used.', &block)
-
-        block = proc { save_option_value('database.results_database.migrate', true) }
-        @cl_parser.on('--results-database-migrate', 'Drop the database schema and then re-create it (all data will be lost!).', &block)
-
-        block = proc { save_option_value('database.results_database.migrate', false) }
-        @cl_parser.on('--results-database-upgrade', 'Try to update the the database schema (the default behaviour).', &block)
-
-        block = proc { |flag| save_option_value('database.results_database.logging', flag); propagate_option("--#{flag ? '' : 'no-'}results-database-logging") }
-        @cl_parser.on('--[no-]results-database-logging', 'Enable / disable the logging of database calls (SQL queries, model loading)', &block)
       end
 
       # Method for creating the help option.
@@ -76,8 +67,6 @@ module Automation
         block = proc { |observers| observers.split(',').each { |observer| save_option_value("task.observer.#{observer}", nil) }; propagate_option('--observers', observers) }
         @cl_parser.on('--observers NAME1,NAME2', 'Enter a list of observers to use for this run.', &block)
 
-        block = proc { save_option_value('task.observer.team_city', nil); propagate_option('--team-city-observer') }
-        @cl_parser.on('--team-city-observer', 'Add the TeamCity observer to this run so that status updates are reported to TeamCity.', "Requires the 'teamcity' feature", &block)
       end
 
       # Method for creating the property option.
@@ -187,9 +176,12 @@ module Automation
       # The first and ONLY place the results database is created and connected to.
       @results_database = load_component(Component::DatabaseType, 'results_database')
       @results_database.connect
-      # Migrate (i.e. recreate the db schema) if required.
-      migrate = @config_manager['database.results_database.migrate', default: false]
-      migrate ? @results_database.migrate! : @results_database.migrate
+      # Migrate (i.e. recreate the db schema) as required.
+      if @config_manager['database.results_database.recreate', default: false]
+        @results_database.migrate!
+      elsif @config_manager['database.results_database.migrate', default: false]
+        @results_database.migrate
+      end
       # Save the reference.
       @databases.results_database = @results_database
 
@@ -214,6 +206,7 @@ module Automation
       create_advanced_options
       create_mode_options
       create_application_options
+      create_feature_options
       create_tail_options
       #
       parse_options
@@ -277,6 +270,10 @@ module Automation
       option_separator
       option_separator 'Usage: main.rb <application>-<mode> [options] [tests]'
       option_separator 'If no test names are specified, all tests are executed.'
+    end
+
+    # Creates feature specific options.
+    def create_feature_options
     end
 
     # Configures the logger so that logs are sent to the required log file.
