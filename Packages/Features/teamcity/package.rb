@@ -2,14 +2,14 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::Teamcity
 
-  class TeamcityPackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('teamcity')
     end
-    
+
     private
 
     # Defines this package.
@@ -19,7 +19,6 @@ module Automation
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::TeamcityPackage)
-
 end
+
+register_package('teamcity', __FILE__, Automation::Teamcity::Package)

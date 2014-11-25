@@ -2,9 +2,9 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::Ant
 
-  class AntPackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('ant')
@@ -15,13 +15,12 @@ module Automation
     # Defines this package.
     def define
       bin('bin', 'ant.bat')
-      
+
       super
     end
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::AntPackage)
-
 end
+
+register_package('ant', __FILE__, Automation::Ant::Package)

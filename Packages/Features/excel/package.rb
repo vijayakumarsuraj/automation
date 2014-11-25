@@ -2,9 +2,9 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::Excel
 
-  class ExcelPackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('excel')
@@ -19,7 +19,6 @@ module Automation
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::ExcelPackage)
-
 end
+
+register_package('excel', __FILE__, Automation::Excel::Package)

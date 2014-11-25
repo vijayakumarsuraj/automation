@@ -5,10 +5,10 @@
 
 require 'automation/modes/runner'
 
-module Automation
+module Automation::Rspec
 
   # Executes tests using RSpec.
-  class Rspec < Automation::Runner
+  class Runner < Automation::Runner
 
     def initialize
       super

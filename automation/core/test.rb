@@ -106,7 +106,7 @@ module Automation
     def excel_data
       if @excel_data.nil?
         require 'excel/excel_data'
-        @excel_data = Automation::ExcelData.new
+        @excel_data = Automation::Excel::Data.new
       end
 
       @excel_data

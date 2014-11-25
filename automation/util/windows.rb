@@ -54,7 +54,7 @@ module Automation
       # DSL for ffi functions.
       extend Fiddle::Importer
 
-      # Access to the user32 functions.
+      # Access to the kernel32 functions.
       dlload 'kernel32.dll'
 
       # Add Win32 API type aliases.

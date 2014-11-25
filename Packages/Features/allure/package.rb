@@ -2,9 +2,9 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::Allure
 
-  class AllurePackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('allure')
@@ -19,8 +19,6 @@ module Automation
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::AllurePackage)
-
-
 end
+
+register_package('allure', __FILE__, Automation::Allure::Package)

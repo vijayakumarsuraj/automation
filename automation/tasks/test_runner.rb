@@ -115,6 +115,7 @@ module Automation
       #
       super
       @result_data = TaskResultData.new(@config_manager['run.result.directory'], @test_name)
+      environment.save(:test_runner, self)
       #
       @logger.debug('Loading test...')
       load_test

@@ -2,9 +2,9 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::SqlServer
 
-  class SqlServerPackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('sqlserver')
@@ -19,7 +19,6 @@ module Automation
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::SqlServerPackage)
-
 end
+
+register_package('sqlserver', __FILE__, Automation::SqlServer::Package)

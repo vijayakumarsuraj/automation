@@ -34,12 +34,12 @@ manager:
 observer:
   allure:
     require_file: "allure/observer"
-    class_name: "AllureObserver"
+    class_name: "Allure::Observer"
     singleton: true
 
 # Component details for the service.
 service:
   allure:
     require_file: "allure/service"
-    class_name: "AllureListener"
+    class_name: "Allure::Listener"
     singleton: true

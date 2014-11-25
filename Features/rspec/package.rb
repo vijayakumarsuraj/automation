@@ -2,9 +2,9 @@
 
 require 'automation/packages/feature_package'
 
-module Automation
+module Automation::Rspec
 
-  class RspecPackage < Automation::FeaturePackage
+  class Package < Automation::FeaturePackage
 
     def initialize
       super('rspec')
@@ -19,7 +19,6 @@ module Automation
 
   end
 
-  remove_const(:PACKAGE_CLASS) if const_defined?(:PACKAGE_CLASS)
-  const_set(:PACKAGE_CLASS, Automation::RspecPackage)
-
 end
+
+register_package('rspec', __FILE__, Automation::Rspec::Package)

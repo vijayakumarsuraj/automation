@@ -7,12 +7,12 @@ require 'automation/core/component'
 
 require 'excel/excel_methods'
 
-module Automation
+module Automation::Excel
 
-  class ExcelData < Component
+  class Data < Component
 
     # Provides support for working with Excel.
-    include Automation::ExcelMethods
+    include Automation::Excel::Methods
 
     # Flag to indicate if a blank cell should be treated as a nil and stripped from the final output. Default is true.
     attr_accessor :strip_blanks
@@ -277,7 +277,7 @@ module Automation
 
   # A simple wrapper for a name and a value.
   # The value can be a single value, an array or an array of arrays.
-  class ExcelData::Variable
+  class Data::Variable
 
     # The name of this variable. This name must be unique per header. Non-unique values will overwrite older values.
     attr_reader :name
@@ -314,7 +314,7 @@ module Automation
   end
 
   # Header is wrapper for a name and a named list of variables.
-  class ExcelData::Header
+  class Data::Header
 
     # The name of the header.
     attr_reader :name

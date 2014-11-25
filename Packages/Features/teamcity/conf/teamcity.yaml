@@ -14,5 +14,5 @@ mode:
 observer:
   team_city:
     require_file: "teamcity/observer"
-    class_name: "TeamcityObserver"
+    class_name: "Teamcity::Observer"
     singleton: true

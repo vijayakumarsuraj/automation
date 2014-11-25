@@ -217,6 +217,20 @@ module Kernel
   X_86 = 'x86'
   X_64 = 'x64'
 
+  # Package definitions.
+  PACKAGE_CLASS = {}
+
+  # Defines a package.
+  # Packages must call this method to register their package so that the framework can install / uninstall / pacakge them.
+  #
+  # @param [String] name
+  # @param [String] file
+  # @param [Class] clazz
+  def register_package(name, file, clazz)
+    PACKAGE_CLASS[file] = clazz
+    PACKAGE_CLASS[name] = clazz
+  end
+
   # Returns the current platform.
   #
   # @return [Integer] X_64 or X_86.

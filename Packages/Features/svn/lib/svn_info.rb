@@ -5,46 +5,42 @@
 
 require 'rexml/document'
 
-module Automation
+module Automation::Svn
 
-  module Svn
+  # Represents the output of the 'info' command.
+  class Info
 
-    # Represents the output of the 'info' command.
-    class SvnInfo
+    # Parses the specified SVN info data.
+    #
+    # @param [String] info_xml the raw XML string.
+    # @return [Info]
+    def self.parse(info_xml)
+      doc = REXML::Document.new(info_xml)
+      info_entry = doc.elements['info/entry']
 
-      # Parses the specified SVN info data.
-      #
-      # @param [String] info_xml the raw XML string.
-      # @return [SvnInfo]
-      def self.parse(info_xml)
-        doc = REXML::Document.new(info_xml)
-        info_entry = doc.elements['info/entry']
+      info = Info.new
+      info.revision = info_entry.attributes['revision']
+      info.url = info_entry.elements['url'].text
+      info.root = info_entry.elements['repository/root'].text
+      info.uid = info_entry.elements['repository/uuid'].text
+      info
+    end
 
-        info = SvnInfo.new
-        info.revision = info_entry.attributes['revision']
-        info.url = info_entry.elements['url'].text
-        info.root = info_entry.elements['repository/root'].text
-        info.uid = info_entry.elements['repository/uuid'].text
-        info
-      end
+    # @return [String]
+    attr_accessor :revision
+    # @return [String]
+    attr_accessor :url
+    # @return [String]
+    attr_accessor :root
+    # @return [String]
+    attr_accessor :uuid
 
-      # @return [String]
-      attr_accessor :revision
-      # @return [String]
-      attr_accessor :url
-      # @return [String]
-      attr_accessor :root
-      # @return [String]
-      attr_accessor :uuid
-
-      # New empty info.
-      def initialize
-        @revision = ''
-        @url = ''
-        @root = ''
-        @uuid = ''
-      end
-
+    # New empty info.
+    def initialize
+      @revision = ''
+      @url = ''
+      @root = ''
+      @uuid = ''
     end
 
   end

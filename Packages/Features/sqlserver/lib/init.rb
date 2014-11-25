@@ -3,10 +3,10 @@
 # 11 Nov 2014
 #
 
-module Automation
+module Automation::SqlServer
 
   # Methods for working with SQLServer databases.
-  module SqlServerDatabaseMethods
+  module DatabaseMethods
 
     # Connection configuration for an SqlServer database.
     #
@@ -23,11 +23,12 @@ module Automation
 
   end
 
-  # Provides database agnostic method extensions / overrides.
+end
+
+module Automation
+
   module DatabaseMethods
-
-    include SqlServerDatabaseMethods
-
+    include Automation::SqlServer::DatabaseMethods
   end
 
 end

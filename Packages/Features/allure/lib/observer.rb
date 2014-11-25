@@ -5,11 +5,11 @@
 
 require 'automation/manager/observer'
 
-module Automation
+module Automation::Allure
 
   # The Allure observer.
-  # Uses DRb to notify the 'AllureListener' service.
-  class AllureObserver < Automation::Manager::Observer
+  # Uses DRb to notify the 'Allure::Listener' service.
+  class Observer < Automation::Manager::Observer
 
     private
 

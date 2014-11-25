@@ -35,9 +35,12 @@ module Automation
 
     # Executes the 'install' action. This is the same for all package types.
     def action_install(type)
-      from = prompt('Install from : ')
-      require "#{from}/package"
-      plugin = Automation::PACKAGE_CLASS.new
+      from = Automation::Converter.to_unix_path(prompt('Install from : '))
+      package_rb = File.join(from, 'package.rb')
+      require package_rb
+
+      raise Automation::ConsoleError.new("No definition found for package '#{package_rb}'") unless PACKAGE_CLASS.has_key?(package_rb)
+      plugin = PACKAGE_CLASS[package_rb].new
       plugin.install(from)
       puts "Installed '#{type}' - #{plugin.name}"
     end
@@ -45,9 +48,11 @@ module Automation
     # Executes the 'package' action. This is the same for all package types.
     def action_package(type)
       name = prompt('Name : ')
-      dest = prompt('Destination : ')
+      dest = Automation::Converter.to_unix_path(prompt('Destination : '))
       require REQUIRE_MAP[type] % {name: name}
-      plugin = Automation::PACKAGE_CLASS.new
+
+      raise Automation::ConsoleError.new("No definition found for package '#{name}'") unless PACKAGE_CLASS.has_key?(name)
+      plugin = PACKAGE_CLASS[name].new
       plugin.package(dest)
       puts "Packaged '#{type}' - #{plugin.name}"
     end
@@ -56,7 +61,9 @@ module Automation
     def action_uninstall(type)
       name = prompt('Name : ')
       require REQUIRE_MAP[type] % {name: name}
-      plugin = Automation::PACKAGE_CLASS.new
+
+      raise Automation::ConsoleError.new("No definition found for package '#{name}'") unless PACKAGE_CLASS.has_key?(name)
+      plugin = PACKAGE_CLASS[name].new
       plugin.uninstall
       puts "Uninstalled '#{type}' - #{plugin.name}"
     end

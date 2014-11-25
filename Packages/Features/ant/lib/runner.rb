@@ -5,10 +5,10 @@
 
 require 'automation/modes/runner'
 
-module Automation
+module Automation::Ant
 
   # Executes tests using Ant.
-  class Ant < Runner
+  class Runner < Automation::Runner
 
     module CommandLineOptions
 

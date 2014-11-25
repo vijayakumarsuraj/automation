@@ -11,6 +11,7 @@ mode:
   incredibuild:
     description: "Executes tests in separate processes using IncrediBuild."
     require_file: "incredibuild/runner"
+    class_name: "Incredibuild::Runner
 
 # IncrediBuild properties.
 incredibuild:

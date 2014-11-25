@@ -5,10 +5,10 @@
 
 require 'automation/modes/runner'
 
-module Automation
+module Automation::Incredibuild
 
   # Executes tests using IncrediBuild.
-  class Incredibuild < Runner
+  class Runner < Automation::Runner
 
     def initialize
       super

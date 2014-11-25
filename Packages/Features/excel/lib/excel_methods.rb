@@ -5,14 +5,14 @@
 
 require 'win32ole'
 
-module Automation
+module Automation::Excel
 
   # General excel error.
-  class ExcelError < Automation::Error
+  class Error < Automation::Error
   end
 
   # Provides methods to manually calculate the cells / sheets in an Excel workbook.
-  module ExcelCalculationMethods
+  module CalculationMethods
 
     # Reference style R1C1
     R1C1 = -4150
@@ -93,10 +93,10 @@ module Automation
   end
 
   # Provides methods to work with the Excel automation object.
-  module ExcelMethods
+  module Methods
 
     # Provides access to manual Excel calculation methods.
-    include Automation::ExcelCalculationMethods
+    include Automation::Excel::CalculationMethods
 
     private
 

@@ -12,6 +12,7 @@ mode:
   ant:
     description: "Executes tests in separate processes using Ant."
     require_file: "ant/runner"
+    class_name: "Ant::Runner"
 
 # Ant properties.
 ant:

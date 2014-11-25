@@ -7,12 +7,12 @@ require 'allure-ruby-adaptor-api'
 
 require 'automation/manager/service'
 
-require_relative 'builder'
+require 'allure/refinements/builder'
 
-module Automation
+module Automation::Allure
 
   # Listens for messages from the allure observer.
-  class AllureListener < Automation::Manager::Service
+  class Listener < Automation::Manager::Service
 
     # New allure listener.
     def initialize
