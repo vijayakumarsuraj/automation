@@ -1,0 +1,9 @@
+-# Shows all results of a particular config and the links to them.
+
+- run_config = @content[:run_config]
+- application_name = run_config.application.application_name
+
+.header
+  = scoped_partial('header', application_name)
+.content
+  = scoped_partial('config_results', application_name)

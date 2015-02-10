@@ -1,0 +1,71 @@
+-# Renders the run results of a particular config.
+
+-# show_full_data - local variable provided by the calling template.
+
+- run_config = @content[:run_config]
+- config_name = run_config.config_name
+- application_name = run_config.application.application_name
+- run_results = run_config.run_results
+- total_rows = run_results.length
+- container_id = "table_container_#{config_name}"
+- table_id = "table_#{config_name}"
+
+- unless defined? show_full_data then show_full_data = true end
+
+- selectable = !@user.nil?
+- shown_rows = 0
+- page_length = @config_manager['web.view.config_results.page_length']
+- summary_page_length = @config_manager['web.view.config_results.summary_page_length']
+
+:javascript
+  $(document).ready(function() {
+    $("##{table_id}").dataTable($.extend({}, dataTableDefaults, {
+      "bFilter": #{show_full_data},
+      "bPaginate": #{show_full_data},
+      "bInfo": #{show_full_data},
+      "iDisplayLength": #{show_full_data ? page_length : 0}
+    }));
+  });
+.table_container.runs_table{id: container_id}
+  .table_title_bar
+    %span.table_title
+      - if show_full_data
+        = config_name
+      - else
+        %a{href: link('config', application_name, config_name, 'index.html')}= config_name
+    - checkbox_name = "#{application_name}_#{config_name}"
+    %span.table_actions
+      - if @user
+        %a.table_action{href: "javascript:deleteRuns('#{link('run/delete')}', '#{checkbox_name}');"}
+          %span Delete
+        %a.table_action{href: "javascript:invalidateRuns('#{link('run/invalidate')}', '#{checkbox_name}');"}
+          %span Invalidate
+  .table_data
+    %table.results{id: table_id}
+      %thead
+        %tr.runs_table.header
+          %td
+          %td
+          %td
+          %td
+          %td
+          %td{width: '100%'}
+          %td
+          %td
+      %tbody
+        - run_results.reverse.each_with_index do |run_result, i|
+          -# Do not display more than 4 rows for any of the builds.
+          - break if (!show_full_data && i >= summary_page_length)
+          - shown_rows = i + 1
+          -# Now look for a file named <application>/partials/run_result.haml. If it does not exist
+          -# render partials/run_result.haml
+          - @content[:run_result] = run_result
+          - args = {locals: {selectable: selectable}}
+          = scoped_partial('run_result/run_result', application_name, args)
+  - if !show_full_data && shown_rows < total_rows
+    .table_footer
+      %span
+        = "Showing #{shown_rows} of #{total_rows}"
+        (
+        %a{href: link('config', application_name, config_name, 'index.html')} View all
+        )

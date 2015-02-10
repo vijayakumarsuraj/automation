@@ -23,10 +23,10 @@ module Automation::Webdriver
     # New page.
     #
     # @param [String] path
-    def initialize(path = '')
+    def initialize(path = '', query = {})
       @path = (path.length > 0 ? "/#{path}" : path)
-      @element = environment.browser
-      @query = {}
+      @element = runtime.browser
+      @query = query
     end
 
     # Opens this page using the current browser.
@@ -39,6 +39,13 @@ module Automation::Webdriver
       query_parts = []
       @query.each_pair { |key, value| query_parts << "#{key}=#{URI.escape(value)}" }
       query_parts.length > 0 ? "#{@path}?#{query_parts.join('&')}" : @path
+    end
+
+    # Gets the title of this page - i.e. browser.title.
+    #
+    # @return [String]
+    def title
+      browser.title
     end
 
   end

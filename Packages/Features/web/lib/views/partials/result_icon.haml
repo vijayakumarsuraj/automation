@@ -1,0 +1,23 @@
+-# Renders the result icon.
+
+-# entity - local variable provided by the calling template.
+
+- result = entity_result(entity)
+- status = entity_status(entity)
+- if status.eql?(Automation::Status::Running)
+  - if entity.end_date_time.nil?
+    %img.result{src: link('images', 'in-progress.gif'), alt: 'in-progress', title: 'Execution in progress'}
+  - else
+    %img.result{src: link('images', 'error.jpg'), alt: 'error', title: 'Exception encountered during execution'}
+- elsif result.eql?(Automation::Result::TimedOut)
+  %img.result{src: link('images', 'attention.png'), alt: 'attention', title: 'Execution timed out'}
+- elsif result.eql?(Automation::Result::Ignored)
+  %img.result{src: link('images', 'ignored.jpg'), alt: 'ignored', title: 'Ignored'}
+- elsif result.eql?(Automation::Result::Exception)
+  %img.result{src: link('images', 'error.jpg'), alt: 'error', title: 'Exception encountered during execution'}
+- elsif result.eql?(Automation::Result::Fail)
+  %img.result{src: link('images', 'fail.jpg'), alt: 'fail', title: 'Failure'}
+- elsif result.eql?(Automation::Result::Pass)
+  %img.result{src: link('images', 'pass.jpg'), alt: 'pass', title: 'Success'}
+- else
+  %img.result{src: link('images', 'unknown.png'), alt: 'unknown', title: 'Status unknown'}

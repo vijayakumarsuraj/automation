@@ -1,0 +1,41 @@
+# The configuration file for the 'web' mode.
+
+web:
+  directory: "${features_directory}/web"
+  # Deployment details.
+  deploy_only: false
+  deploy:
+    enabled: true
+    clean: false
+    directory: "${data.directory}/Web"
+  # Rack server details.
+  host: "localhost"
+  port: 8080
+  environment: "development"
+  server: "thin"
+  lock: false
+  # Caching.
+  cache:
+    directory: "${data.directory}/Cache"
+  # View configs.
+  view:
+    config_results:
+      page_length: 15
+      summary_page_length: 5
+    partials:
+      task_result:
+        dont_render: []
+
+mode:
+  web:
+    require_file: "web/runner"
+    description: "Web server for hosting test results."
+
+# The web database stores information needed for the WebApp Sinatra application.
+database:
+  results_database:
+    migrate: true
+  web_database:
+    require_file: "web/database"
+    singleton: true
+    __defaults__: database.results_database

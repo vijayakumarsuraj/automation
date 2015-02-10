@@ -1,0 +1,12 @@
+-# Renders a run status span.
+
+-# first - local variable provided by the calling template.
+-# text - local variable provided by the calling template.
+-# style - local variable provided by the calling template.
+-# id - local variable provided by the calling template.
+-# hint - local variable provided by the calling template.
+
+= '/' unless first
+%span{id: id, class: style}= text
+%script
+  &= hover_hint(id, hint)

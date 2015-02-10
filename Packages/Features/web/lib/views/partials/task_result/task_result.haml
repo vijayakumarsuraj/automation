@@ -1,0 +1,30 @@
+-# Renders a generic task result row.
+
+-# task_result - local variable provided by the calling template.
+
+- run_result = task_result.run_result
+- task = task_result.task
+- task_name = task_result.properties['display_name']
+- task_name = task.task_name if task_name.nil?
+- run_name = run_result.run_name
+- run_config = run_result.run_config
+- application_name = run_config.application.application_name
+- result = entity_result(task_result)
+
+- dont_render_list = scoped_config(application_name, 'partials.task_result.dont_render', [])
+- return if dont_render_list.include?(task_name)
+
+%tr{class: "tasks_table data #{result_style(result)}"}
+  %td
+    - args = {locals: {entity: task_result}}
+    = scoped_partial('result_icon', application_name, args)
+  %td= task_name
+  - if entity_status(run_result) == Automation::Status::Complete
+    %td{id: "links_#{run_name}_#{task_name}"}
+      - unless result.eql?(Automation::Result::Unknown) && task_result.end_date_time.nil?
+        - args = {locals: {task_result: task_result}}
+        = scoped_partial('task_result/links', application_name, args)
+  - else
+    %td
+  %td
+    = entity_date_time_summary(task_result)

@@ -14,7 +14,7 @@ module Automation::Webdriver
   class StepFailedError < Automation::Error
   end
 
-  class Test < Automation::Test
+  class Test < Automation::Test::Test
 
     # Access to the test's browser instance.
     attr_reader :b
@@ -53,7 +53,7 @@ module Automation::Webdriver
     def open_browser
       @logger.info("Starting browser '#{@browser_name}' #{@browser_args.inspect}...")
       @browser = Watir::Browser.new(@browser_name, *@browser_args)
-      environment.save(:browser, @browser)
+      runtime.save(:browser, @browser)
     end
 
     # Closes the browser this test had opened.

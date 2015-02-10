@@ -1,0 +1,79 @@
+/*
+ * The css file used by CompareIt!.
+ */
+body {
+    font-family: "Courier New", sans-serif;
+    font-size: 1em;
+}
+
+td {
+    border: 0;
+    font-size: 80%;
+    white-space: pre-wrap;
+}
+
+table {
+    border: 0;
+    width: 100%;
+    color: #666666;
+}
+
+thead {
+    background-color: #0A246A;
+    color: #FFFFFF;
+    height: 30px;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+}
+
+.Same {
+    width: 48%;
+}
+
+.SrcOnly {
+    background-color: #C0DCC0;
+    color: #008000;
+    width: 48%;
+}
+
+.DstOnly {
+    background-color: #C0DCC0;
+    color: #C80000;
+    width: 48%;
+}
+
+.Virtual {
+    background-color: #EEEEEE;
+    width: 48%;
+}
+
+.Changed {
+    background-color: #C0DCC0;
+    color: #0000FF;
+    width: 48%;
+}
+
+.InSame {
+    color: #000000;
+}
+
+.InDiff {
+    color: #0000FF;
+    font-weight: bold;
+}
+
+.LineNum {
+    background-color: #EEEEEE;
+    width: 1%;
+}
+
+.Stats {
+    background-color: #EEEEEE;
+    color: black;
+}
+
+.StatsA {
+    background-color: #EEEEEE;
+    color: black;
+}

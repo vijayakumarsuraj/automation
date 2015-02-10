@@ -1,0 +1,7 @@
+-# Page not found error.
+.header
+  = scoped_partial('header', nil)
+.content
+  .error
+    - error = env['sinatra.error']
+    &= error.kind_of?(Sinatra::NotFound) ? "Sorry, but we couldn't find that page!" : error.message

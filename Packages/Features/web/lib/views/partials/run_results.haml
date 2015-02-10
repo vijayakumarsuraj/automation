@@ -1,0 +1,16 @@
+-# Renders the run results of a particular run.
+
+- run_result = @content[:run_result]
+
+- run_config = run_result.run_config
+- application_name = run_config.application.application_name
+- test_results = run_result_test_results(run_result)
+- task_results = run_result_task_results(run_result)
+
+= scoped_partial('run_result/run_result_header', application_name)
+
+- args = {locals: {test_results: test_results, table_name: 'tests', table_title: 'Tests'}}
+= scoped_partial('test_result/test_results_table', application_name, args)
+
+- args = {locals: {task_results: task_results, table_name: 'tasks', table_title: 'Tasks'}}
+= scoped_partial('task_result/task_results_table', application_name, args)
