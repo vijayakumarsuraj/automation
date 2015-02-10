@@ -19,7 +19,7 @@ module Automation
       def initialize
         super
 
-        results_database = environment.databases.results_database
+        results_database = runtime.databases.results_database
         run_result = results_database.get_run_result
         uri = results_database.get_run_property(run_result, 'manager_uri')
         raise 'Could not determine manager URI' if uri.nil?

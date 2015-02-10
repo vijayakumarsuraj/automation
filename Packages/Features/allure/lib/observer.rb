@@ -65,8 +65,8 @@ module Automation::Allure
       suite_name, test_name = _test_details(test)
 
       metadata = test.metadata
-      feature = metadata[:feature]
-      severity = metadata[:priority].to_sym
+      feature = metadata.fetch(:feature, nil)
+      severity = metadata.fetch(:priority, :normal).to_sym
 
       @manager.allure_start_test(suite_name, test_name, {feature: feature, severity: severity})
     end

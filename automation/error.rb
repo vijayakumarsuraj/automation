@@ -8,9 +8,7 @@ require 'util/chained_error'
 module Automation
 
   class Error < RuntimeError
-
     include Util::ChainedError
-
   end
 
   # Raised when an error is encountered during parsing the command line.

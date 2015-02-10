@@ -20,19 +20,6 @@ module Automation
                       'If skipped, the current user will be used.', &block)
       end
 
-      def option_filter
-        block = proc { |key_value| key, value = key_value.split('=', 2); @selected_test_filters[key.downcase] << value }
-        @cl_parser.on('--pick-test KEY=VALUE', 'Specify a criteria to select which tests should be executed.',
-                      'Available selection keys are: "group", "type"',
-                      'Can be used multiple times.', &block)
-
-        block = proc { |value| @selected_test_filters['group'] << value }
-        @cl_parser.on('--pick-test-group GROUP', 'Equivalent to the above option for the key "group".', &block)
-
-        block = proc { |value| @selected_test_filters['type'] << value }
-        @cl_parser.on('--pick-test-type TYPE', 'Equivalent to the above option for the key "type".', &block)
-      end
-
       def option_database
         block = proc { save_option_value('database.results_database.recreate', true) }
         @cl_parser.on('--results-database-recreate', 'Drop the database schema and then re-create it (all data will be lost!).', &block)
@@ -40,48 +27,14 @@ module Automation
 
     end
 
-    # Provides task group specific methods.
-    module TaskGroupMethods
-
-      # Generates the tasks of the group 'tests'.
-      #
-      # @param [Array] tasks the list of tasks of this group.
-      def process_tasks_tests(tasks)
-        @logger.finer('Sorting tests by priority...')
-        tasks = tasks.sort { |t1, t2| get_test_priority(t2) <=> get_test_priority(t1) }
-
-        @logger.finer('Generating test tasks...')
-        tasks.each do |test_name|
-          depends_on = @test_dependencies[test_name]
-          depends_on = [] if depends_on.nil?
-          overrides = {task_name: test_name, args: [test_name], depends_on: depends_on}
-          process_task(@tests_task_name, 'tests', overrides)
-        end
-      end
-
-      # Get the tasks for the group 'tests'.
-      #
-      # @return [Array] the list of test names.
-      def get_tasks_tests
-        @test_pack.get_active_tests
-      end
-
-    end
-
     # Include the RunnerMode specific command line options.
     include Automation::Runner::CommandLineOptions
-    # Provides task group specific method implementations.
-    include TaskGroupMethods
 
     # New runner mode.
     def initialize
       super
 
       @tasks = {}
-      @test_priorities = {}
-      @tests_task_name = 'test_runner'
-      @selected_test_filters = Hash.new { |h, k| h[k] = [] }
-
       @archive_results = true
     end
 
@@ -95,14 +48,6 @@ module Automation
         @run_result.status = Status::Complete
         @run_result.end_date_time = DateTime.now
         @run_result.save
-        # Any tests that are still "running" are marked as complete.
-        # Their results are set to "unknown" too.
-        test_results = @results_database.get_running_test_results(@run_result)
-        test_results.each do |test_result|
-          test_result.status = Status::Complete
-          test_result.result = Automation::Result::Unknown
-          test_result.save
-        end
       end
 
       stop_manager
@@ -156,29 +101,12 @@ module Automation
       notify_change('runner_started')
     end
 
-    # Overridden to include dependent tests while configuring the test pack.
-    def configure_test_pack
-      # Apply the required set of filters to the selected tests iteratively.
-      @logger.debug('Applying test selection filters...')
-      @selected_test_filters.each_pair { |key, values| @selected_test_names = @test_pack.filter_test_names(key, values, @selected_test_names) }
-      # Update the list of tests with implicit includes (due to dependencies).
-      @logger.debug('Checking for dependencies...')
-      implicit_includes = []
-      @selected_test_names.each { |test_name| implicit_includes << @test_pack.get_test_dependencies(test_name, true) }
-      @selected_test_names = [@selected_test_names + implicit_includes].flatten.uniq
-      # Validate if the list of selected tests are valid.
-      validate_selected_tests
-      # Configure the test pack with the new list of test names.
-      super
-    end
-
     # Adds the runner specific options.
     def create_mode_options
       option_separator
       option_separator 'Runner options:'
       option_database
       option_trigger
-      option_filter
     end
 
     # Generates the tasks for the specified group.
@@ -202,12 +130,6 @@ module Automation
     # Stops the manager task.
     def stop_manager
       @manager.stop unless @manager.nil?
-    end
-
-    # Validates if the @selected_test_names list is valid.
-    # The default behaviour only checks to see if at least 1 test was selected.
-    def validate_selected_tests
-      raise ExecutionError.new('No tests were selected') if @selected_test_names.length == 0
     end
 
     # Get the combined list of dependent groups and tasks.
@@ -252,18 +174,6 @@ module Automation
     def get_tasks(group)
       method_name = "get_tasks_#{group}"
       respond_to?(method_name, true) ? send(method_name) : @config_manager["task_groups.#{group}.tasks"]
-    end
-
-    # Gets the weight of a test (higher the weight, the higher the priority)
-    # The default implementation will return the moving average (in seconds) of the last 10 runs of this test.
-    # If no previous runs were found returns Float::MAX
-    def get_test_priority(test_name)
-      unless @test_priorities.has_key?(test_name)
-        priority = @results_database.get_test_average_time(test_name, 10, Float::MAX)
-        @test_priorities[test_name] = priority
-      end
-
-      @test_priorities[test_name]
     end
 
     # Get the 'stop_on_failure' flag for this group.

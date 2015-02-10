@@ -20,7 +20,7 @@ module Automation
     # @param [String] key
     # @param [Object] value
     def add_override_property(key, value, overrides = {})
-      environment.config_manager.add_override_property(key, value, overrides)
+      runtime.config_manager.add_override_property(key, value, overrides)
     end
 
     # Adds a standard property to the framework's config manager.
@@ -28,7 +28,7 @@ module Automation
     # @param [String] key
     # @param [Object] value
     def add_standard_property(key, value, overrides = {})
-      environment.config_manager.add_standard_property(key, value, overrides)
+      runtime.config_manager.add_standard_property(key, value, overrides)
     end
 
     # Submits a job for execution.
@@ -40,7 +40,7 @@ module Automation
     # @param [Proc] job optional block if task is nil.
     # @return [Concurrent::Task] the task that has was scheduled.
     def background(work = nil, wait = false, overrides = {}, &job)
-      thread_pool = environment.thread_pool
+      thread_pool = runtime.thread_pool
       if work.kind_of?(Enumerable)
         tasks = work.map { |item| thread_pool.submit(nil, overrides, item, &job) }
         wait ? tasks.map { |task| task.result } : tasks
@@ -58,20 +58,23 @@ module Automation
       $LOAD_PATH.any? { |path| File.exist?(File.join(path, "#{file}.rb")) }
     end
 
-    # The automation environment.
-    #
-    # @return [Automation::Environment]
-    def environment
-      Environment.instance
-    end
-
     # Extends the specified target with the specified module.
     #
     # @param [Object] target the target to extend.
     # @param [Module] mod the module to extend with.
     def extend_with(target, mod)
-      environment.logger.trace("Extending '#{target}' with '#{mod}'")
+      runtime.logger.trace("Extending '#{target}' with '#{mod}'")
       target.send(:extend, mod)
+    end
+
+    # Check if the specified feature is available.
+    #
+    # @param [String] feature
+    # @return [Boolean]
+    def feature_available?(feature)
+      features_directory = runtime.config_manager['features_directory']
+      feature_directory = File.join(features_directory, feature)
+      File.exist?(feature_directory)
     end
 
     # Returns a formatted version of the specified exception.
@@ -93,7 +96,7 @@ module Automation
       component_metaclass = metaclass(component)
       extensions = Component.get_extensions(type, name)
       extensions.each do |extension|
-        environment.logger.trace("Include '#{extension}' into #{type}.#{name}")
+        runtime.logger.trace("Include '#{extension}' into #{type}.#{name}")
         component_metaclass.send(:include, extension)
       end
       # Return the component.
@@ -112,7 +115,7 @@ module Automation
     # @param [Object] target the target to include into.
     # @param [Module] mod the module to include.
     def include_into(target, mod)
-      environment.logger.trace("Including '#{mod}' into '#{target}'...")
+      runtime.logger.trace("Including '#{mod}' into '#{target}'...")
       target.send(:include, mod)
     end
 
@@ -123,23 +126,23 @@ module Automation
     # @param [Array] args arguments to be passed to the component's constructor.
     # @return [Component] the object that represents the specified component.
     def load_component(type, name, *args, ** overrides)
-      config_manager = environment.config_manager
+      config_manager = runtime.config_manager
       application = config_manager['run.application']
       mode = config_manager['run.mode']
       require_file, class_name, singleton = Component.get_details(application, mode, type, name, overrides)
       # If the component is marked as a singleton and an instance of it has already been created, we return that
       # instance instead of loading a new one.
-      if singleton && environment.loaded_components.has_key?(class_name)
-        return environment.loaded_components[class_name]
+      if singleton && runtime.loaded_components.has_key?(class_name)
+        return runtime.loaded_components[class_name]
       end
       # If the component is not marked as a singleton or it hasn't been instantiated before, we create an instance.
-      environment.logger.finer("Loading '#{class_name}' from '#{require_file}'...")
+      runtime.logger.finer("Loading '#{class_name}' from '#{require_file}'...")
       require require_file
       component = constant(class_name).new(*args)
       component = include_extensions(component, type, name)
       component.component_name = name
       # If the singleton flag was true, we also save the instance for later use.
-      environment.loaded_components[class_name] = component if singleton
+      runtime.loaded_components[class_name] = component if singleton
       # And return it.
       component
     end
@@ -200,6 +203,13 @@ module Automation
       (0...length).map { random_letter }.join
     end
 
+    # The automation environment.
+    #
+    # @return [Automation::Runtime]
+    def runtime
+      Runtime.instance
+    end
+
     # Executes the provided block raising an error if it takes longer than sec seconds to complete.
     #
     # @param [Integer] secs
@@ -221,7 +231,7 @@ module Kernel
   PACKAGE_CLASS = {}
 
   # Defines a package.
-  # Packages must call this method to register their package so that the framework can install / uninstall / pacakge them.
+  # Packages must call this method to register their package so that the framework can install / uninstall / package them.
   #
   # @param [String] name
   # @param [String] file

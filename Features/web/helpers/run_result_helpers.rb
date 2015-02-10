@@ -20,15 +20,15 @@ module Automation
     #
     # @param [Automation::ResultsDatabase::RunResult] run_result
     def run_result_change_counts(run_result)
-      Automation::Change::ByValue.map { |change| run_result_change_count(run_result, change) }
+      Automation::Test::Change::ByValue.map { |change| run_result_change_count(run_result, change) }
     end
 
     # Returns an array of test results sorted by their result and name for the specified change.
     #
     # @param [Automation::ResultsDatabase::RunResult] run_result
-    # @param [Automation::Change] change the change.
+    # @param [Automation::Test::Change] change the change.
     def run_result_change_results(run_result, change)
-      @results_database.get_test_results_with_change(run_result, change)
+      @test_database.get_test_results_with_change(run_result, change)
     end
 
     # Returns an array of task results sorted by their result and name.
@@ -65,10 +65,10 @@ module Automation
     # Get the number of tests with the specified change.
     #
     # @param [Automation::ResultsDatabase::RunResult] run_result
-    # @param [Automation::Change] change
+    # @param [Automation::Test::Change] change
     # @return [Integer] the count.
     def run_result_change_count(run_result, change)
-      ResultsDatabase::ChangeEvent.where(run_result_id: run_result, value: change.value).count
+      TestDatabase::ChangeEvent.where(run_result_id: run_result, value: change.value).count
     end
 
   end

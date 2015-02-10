@@ -89,13 +89,6 @@ module Automation
         @cl_parser.on('--results-archive PATH', 'Specify the location of the results archive.', &block)
       end
 
-      # Method for creating the run group option.
-      def option_run_group
-        block = proc { |group| save_option_value('test.groups', group, true) }
-        @cl_parser.on('--test-group NAME', 'Specify a test group to run.',
-                      'Use multiple times for more than one group.', &block)
-      end
-
       # Method for creating the run name option.
       def option_run_id
         block = proc { |name| save_option_value('run.name', name); propagate_option('--run-name', name) }
@@ -107,13 +100,6 @@ module Automation
       # @param [String] text the text that will be displayed.
       def option_separator(text = '')
         @cl_parser.separator(text)
-      end
-
-      # Method for creating the test pack option.
-      def option_test_pack
-        block = proc { |test_pack| save_option_value('test_pack.name', test_pack); propagate_option('--test-pack', test_pack) }
-        @cl_parser.on('--test-pack NAME', 'Specify the name of the test pack to use.',
-                      'If skipped, the default specified for the application is used.', &block)
       end
 
       # Method for creating the version option.
@@ -146,9 +132,9 @@ module Automation
       @component_type = Automation::Component::ModeType
       @raise_exceptions = false
       @archive_results = false
-      @databases = environment.databases
+      @databases = runtime.databases
 
-      environment.save(:mode, self)
+      runtime.save(:mode, self)
     end
 
     private
@@ -172,32 +158,21 @@ module Automation
 
     # The following steps are carried out (in no particular order):
     # 1. Connect to the results database.
+    # 2. Load any application specific databases.
     def run
+      create_file_appender
       # The first and ONLY place the results database is created and connected to.
-      @results_database = load_component(Component::DatabaseType, 'results_database')
-      @results_database.connect
-      # Migrate (i.e. recreate the db schema) as required.
-      if @config_manager['database.results_database.recreate', default: false]
-        @results_database.migrate!
-      elsif @config_manager['database.results_database.migrate', default: false]
-        @results_database.migrate
-      end
-      # Save the reference.
-      @databases.results_database = @results_database
-
+      load_database
       # Create any application specific databases.
-      application_name = @config_manager['run.application']
-      method_name = :"load_#{application_name}_database"
-      send(method_name) if respond_to?(method_name, true)
+      load_application_database
     end
 
     # The following steps are carried out (in no particular order):
     # 1. Create the command line options that all modes support.
     # 2. Create the standard properties that all modes share.
     # 3. Create the result directory.
-    # 4. Load the test pack.
-    # 5. Parse the command line options (checks if they are valid too).
-    # 6. Create the file appender used by this mode.
+    # 4. Parse the command line options (checks if they are valid too).
+    # 5. Create the file appender used by this mode.
     def setup
       add_standard_properties
       #
@@ -213,9 +188,6 @@ module Automation
       load_config_configuration
       create_result_directory
       load_results_archive
-      load_test_pack
-      configure_test_pack
-      create_file_appender
     end
 
     # Adds standard properties that all modes need.
@@ -235,15 +207,6 @@ module Automation
         @appender.close
         Logging::Logger.root.remove_appenders(@appender)
       end
-    end
-
-    # Configures the test pack for the test(s) that are being executed.
-    def configure_test_pack
-      length = @selected_test_names.length
-      @logger.info("Selected tests: #{@selected_test_names.join(', ')}") if (length > 0 && length <= 5)
-      @logger.info("Selected #{length} test(s)") if length > 5
-      @test_pack.set_active_tests(@selected_test_names)
-      @test_dependencies = @test_pack.get_active_tests_dependencies
     end
 
     # Adds the advanced options that all modes support.
@@ -268,12 +231,13 @@ module Automation
     # Creates the banner printed by the help message.
     def create_banner
       option_separator
-      option_separator 'Usage: main.rb <application>-<mode> [options] [tests]'
-      option_separator 'If no test names are specified, all tests are executed.'
+      option_separator 'Usage: main.rb <application>-<mode> [options]'
     end
 
     # Creates feature specific options.
     def create_feature_options
+      option_separator
+      option_separator 'Feature options:'
     end
 
     # Configures the logger so that logs are sent to the required log file.
@@ -306,8 +270,6 @@ module Automation
       option_separator
       option_separator 'Standard options:'
       option_config_name
-      option_test_pack
-      option_run_group
       option_logging
     end
 
@@ -319,6 +281,13 @@ module Automation
       option_version_tail
     end
 
+    # Loads the application specific database.
+    def load_application_database
+      application_name = @config_manager['run.application']
+      method_name = :"load_#{application_name}_database"
+      send(method_name) if respond_to?(method_name, true)
+    end
+
     # Loads the build specific configuration.
     def load_config_configuration
       file_name = @config_manager['run.config_file', default: nil]
@@ -327,27 +296,24 @@ module Automation
       FileUtils.cd(FRAMEWORK_ROOT) { @config_manager.load_configuration('config', "Configuration/Builds/#{file_name}") }
     end
 
+    # Loads the results database.
+    def load_database
+      @results_database = load_component(Component::CoreType, 'results_database')
+      @results_database.connect
+      # Migrate (i.e. recreate the db schema) as required.
+      if @config_manager['database.results_database.recreate', default: false]
+        @results_database.migrate!
+      elsif @config_manager['database.results_database.migrate', default: false]
+        @results_database.migrate
+      end
+      # Save the reference.
+      @databases.results_database = @results_database
+    end
+
     # Loads the results archive component.
     def load_results_archive
       @results_archive = load_component(Component::ResultDataType, 'results_archive')
-      environment.save(:results_archive, @results_archive)
-    end
-
-    # Loads the test pack.
-    def load_test_pack
-      # Load the test pack.
-      test_pack_directory = @config_manager['test_pack.directory']
-      @test_pack = load_component(Component::CoreType, 'test_pack', test_pack_directory)
-      environment.save(:test_pack, @test_pack)
-      # The test names as provided on the command line.
-      @cl_non_options = ['*'] if @cl_non_options.length == 0
-      @selected_test_names = @test_pack.glob_test_names(*@cl_non_options)
-      # The test name (if only one test is being executed).
-      @test_name = @selected_test_names.length == 1 ? @selected_test_names[0] : '[MULTIPLE]'
-      add_standard_property('test.name', @test_name, overwrite: true)
-      # Initialize the test pack.
-      @test_pack.update_load_path
-      @test_pack.load_configurations
+      runtime.save(:results_archive, @results_archive)
     end
 
     # Get the name of the log file for this component.

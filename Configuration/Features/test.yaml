@@ -1,0 +1,47 @@
+# The configuration file for the 'test' feature.
+
+package:
+  test_pack_package:
+    require_file: "test/packages/test_pack_package"
+    class_name: "Automation::Test::TestPackPackage"
+
+# The test database stores information about tests.
+database:
+  test_database:
+    require_file: "test/database"
+    singleton: true
+    __defaults__: database.results_database
+
+# Adds the 'test-monitor' service.
+manager:
+  service:
+    test_monitor:
+      enabled: true
+      # Timing information for the monitor.
+      frequency: 60 # 60s = 1m
+      default_duration: 1200 # 1200s = 20m
+      minimum_duration: 600 # 600s = 10m
+      maximum_duration: 2400 # 2400s = 40m
+      heartbeat:
+        timeout: 60 # 60s
+
+# Details of the 'test-monitor' service.
+service:
+  test_monitor:
+    require_file: "test/monitor/service"
+    class_name: "Automation::Test::TestMonitor"
+
+# Details of the 'test-monitor' observer.
+observer:
+  test_monitor:
+    require_file: "test/monitor/observer"
+    class_name: "Automation::Test::TestMonitorObserver"
+    singleton: true
+
+task:
+  test_runner:
+    require_file: "test/tasks/test_runner"
+    class_name: "Automation::Test::TestRunner"
+  analyser:
+    require_file: "test/tasks/analyser"
+    class_name: "Automation::Test::Analyser"

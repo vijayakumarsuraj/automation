@@ -34,7 +34,7 @@
       %tbody
         - run_results.reverse[0..50].each do |run_result|
           - run_name = run_result.run_name
-          - test_result = Automation::ResultsDatabase::TestResult.where(run_result_id: run_result, test_id: test).first
+          - test_result = Automation::TestDatabase::TestResult.where(run_result_id: run_result, test_id: test).first
           - if test_result.nil?
             -# The test did no run here.
             %tr{class: 'tests_table data'}

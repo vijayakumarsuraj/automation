@@ -32,13 +32,14 @@ module Automation
       # Starts all required services on this controller.
       #
       def start_services
-        @config_manager.get_child?('manager.service').each_child do |config|
+        services = @config_manager.get_child?('manager.service')
+        services.each_child do |config|
           next unless config['enabled']
           name = config.name
           service = load_component(Component::ServiceType, name)
           @services[name] = service
           @logger.info("Service '#{name}' successfully registered")
-        end
+        end if services
       end
 
       private

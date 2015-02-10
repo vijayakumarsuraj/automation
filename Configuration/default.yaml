@@ -60,18 +60,6 @@ run:
     user:
     official_users: ["Schedule Trigger", "Subversion"]
 
-manager:
-  service:
-    test_monitor:
-      enabled: true
-      # Timing information for the monitor.
-      frequency: 60 # 60s = 1m
-      default_duration: 1200 # 1200s = 20m
-      minimum_duration: 600 # 600s = 10m
-      maximum_duration: 2400 # 2400s = 40m
-      heartbeat:
-        timeout: 60 # 60s
-
 test:
   heartbeat:
     # The frequency with which a test will send heartbeat messages.
@@ -82,11 +70,9 @@ test:
 # Mode properties.
 mode:
   rake:
-    description: "Executes tests in separate processes using Rake (no support for parallel execution)."
-  debug:
-    description: "Executes a test in the current process. Can execute exactly one test."
+    description: "Executes tasks in separate processes using Rake (no support for parallel execution)."
   execute:
-    description: "Executes tests in separate processes using Ruby (full support for parallel execution)"
+    description: "Executes tasks in separate processes using Ruby (full support for parallel execution)"
   # Administrative modes.
   console:
     description: "An interactive console for running administrative tasks."
@@ -120,13 +106,3 @@ task:
     depends_on: []
   analyser:
     depends_on: ["finaliser"]
-
-# Observer properties.
-observer:
-  test_monitor:
-    class_name: "TestMonitorObserver"
-    singleton: true
-
-service:
-  test_monitor:
-    empty:

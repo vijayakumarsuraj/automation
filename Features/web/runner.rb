@@ -18,14 +18,11 @@ module Automation
         @cl_parser.on('--web-database ID', 'Specify the id of the database to use.',
                       'If skipped, the default specified for the mode is used.', &block)
 
-        block = proc { save_option_value('database.web_database.migrate', true) }
-        @cl_parser.on('--web-database-migrate', 'Drop the database schema and then re-create it (all data will be lost!).', &block)
-
-        block = proc { save_option_value('database.web_database.migrate', false) }
-        @cl_parser.on('--web-database-upgrade', 'Try to update the the database schema (the default behaviour).', &block)
-
         block = proc { |flag| save_option_value('database.web_database.logging', flag); propagate_option("--#{flag ? '' : 'no-'}web-database-logging") }
         @cl_parser.on('--[no-]web-database-logging', 'Enable / disable the logging of database calls (SQL queries, model loading)', &block)
+
+        block = proc { save_option_value('database.web_database.recreate', true) }
+        @cl_parser.on('--web-database-recreate', 'Drop the database schema and then re-create it (all data will be lost!).', &block)
       end
 
       # Method for creating the deployment options.
@@ -70,20 +67,25 @@ module Automation
       super
 
       # Sinatra will be told to use this logger.
-      environment.save('logger', @logger)
+      runtime.save('logger', @logger)
     end
 
     private
 
     def run
       super
+
       # The first and ONLY place the web database is created and connected to.
       @web_database = load_component(Component::DatabaseType, 'web_database')
       @web_database.connect
-      # Migrate (i.e. recreate the db schema) if required.
-      migrate = @config_manager['database.web_database.migrate', default: false]
-      migrate ? @web_database.migrate! : @web_database.migrate
+      # Migrate (i.e. recreate the db schema) as required.
+      if @config_manager['database.web_database.recreate', default: false]
+        @web_database.migrate!
+      elsif @config_manager['database.web_database.migrate', default: false]
+        @web_database.migrate
+      end
       @databases['web'] = @web_database
+
       # Deploy the web files - including any application specific code.
       deploy_directory = @config_manager['web.deploy.directory']
       if @config_manager['web.deploy.enabled']
@@ -106,7 +108,8 @@ module Automation
           end
         end
       end
-      # Now run!
+
+      # Finally, run!
       @logger.info("Running '#{site_rb}'...")
       WebApp.run!
     end

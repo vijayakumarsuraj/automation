@@ -4,9 +4,9 @@
 #
 
 # The base class for all Web database models.
-class Automation::WebDatabase::BaseModel < ActiveRecord::Base
+class Automation::WebDatabase::BaseModel < Automation::Database::BaseModel
+  self.table_name_prefix = 'web_'
+  self.abstract_class = true
 end
-
-Automation::WebDatabase::BaseModel.abstract_class = true
 
 require_relative 'models/user'

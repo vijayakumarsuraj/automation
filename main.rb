@@ -77,9 +77,6 @@ else
   show_supported_modes = false
 end
 
-# Load mode and application specific configuration files.
-Automation.load_configurations(application, mode)
-
 # If true, print a usage message along with all supported modes (for the application specified).
 if show_supported_modes
   raise 'Cannot show supported modes - no application was specified' if application.empty?
@@ -98,6 +95,7 @@ end
 # Configure the framework.
 Automation.configure(application, mode)
 Automation.initialise_features
+Automation.load_configurations(application, mode)
 include Automation::Kernel
 
 # Load the required mode and start it.
@@ -105,8 +103,8 @@ component = load_component(Automation::Component::ModeType, mode)
 component.start
 
 # All done. Shutdown the automation thread pool.
-environment.thread_pool.shutdown_now
-environment.thread_pool.wait_for(1)
+runtime.thread_pool.shutdown_now
+runtime.thread_pool.wait_for(1)
 
 # Exit with the appropriate exit code.
 exit(component.result.return_value)

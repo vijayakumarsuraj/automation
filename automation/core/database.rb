@@ -11,6 +11,11 @@ module Automation
   # The base class for databases used by the framework.
   class Database < Component
 
+    # The base class for all model classes.
+    class BaseModel < ActiveRecord::Base
+      self.abstract_class = true
+    end
+
     # Provides database agnostic method extensions / overrides.
     include Automation::DatabaseMethods
 
@@ -39,9 +44,10 @@ module Automation
       return if @connected
 
       @logger.info('Connecting...')
-      @logger.level = db_config('logging', default: @config_manager["database.#{@component_name}.logging"])
+      sql_logger = Logging::Logger["#{self.class.name}::SQL"]
+      sql_logger.level = db_config('logging', default: @config_manager["database.#{@component_name}.logging"])
       # Establish the connection.
-      base_model.logger = @logger
+      base_model.logger = sql_logger
       base_model.establish_connection(@connection_config)
       # Mark as connected.
       @connected = true
@@ -61,27 +67,6 @@ module Automation
 
       migrate(0) # migrate to version 0.
       migrate # migrate to latest version.
-    end
-
-    # Update the database schema to the specified version.
-    #
-    # @param [Integer] version the version to migrate to. If nil, migrates to the latest version.
-    def migrate(version = nil)
-      @logger.fine('Syncing schema...')
-
-      ActiveRecord::Base.establish_connection(@connection_config)
-      ActiveRecord::Migration.verbose = false
-      # Migrate using the framework's migrations first.
-      @logger.fine('Running core migrations...')
-      path = File.join(FRAMEWORK_ROOT, "automation/databases/#{@component_name}/migrations")
-      ActiveRecord::Migrator.migrate(path, version)
-      # Then the application's migrations.
-      application = @config_manager['run.application']
-      @logger.fine("Running #{application} migrations...")
-      path = File.join(FRAMEWORK_ROOT, APP_DIR, "#{application}/databases/#{@component_name}/migrations")
-      ActiveRecord::Migrator.migrate(path, version)
-
-      ActiveRecord::Base.connection.close
     end
 
     # Executes the specified block within a transaction.
@@ -107,6 +92,24 @@ module Automation
     # @param [Hash] options optional hash of options.
     def db_config(key, options = {})
       @config_manager["database.#{@component_name}.#{@database_id}.#{key}", options]
+    end
+
+    # Update the database schema to the specified version.
+    #
+    # @param [Integer] version the version to migrate to. If nil, migrates to the latest version.
+    def migrate(path, version = nil)
+      # Establish a connection for migration.
+      ActiveRecord::Base.establish_connection(@connection_config)
+      ActiveRecord::Migration.verbose = false
+      # Namespace definition for the current database.
+      # This will ensure that each database is migrated independently.
+      ActiveRecord::Base.table_name_prefix = base_model.table_name_prefix
+      ActiveRecord::Migrator.migrate(path, version)
+      # Clean-up once done.
+      ActiveRecord.send(:remove_const, :SchemaMigration)
+      load 'active_record/schema_migration.rb'
+      ActiveRecord::Base.table_name_prefix = ''
+      ActiveRecord::Base.connection.close
     end
 
   end

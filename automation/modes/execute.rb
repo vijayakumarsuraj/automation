@@ -10,7 +10,7 @@ require 'automation/modes/single'
 
 module Automation
 
-  # Executes tests using the executor library.
+  # Executes tasks using the executor library.
   class Execute < Runner
 
     def initialize
@@ -18,7 +18,7 @@ module Automation
 
       # Initialises the variables needed to calculate processor affinity values.
       @processor_ids = Queue.new
-      @number_of_processors = Automation.environment.number_of_processors
+      @number_of_processors = Automation.runtime.number_of_processors
       @number_of_processors.times { |i| @processor_ids.push(i) }
 
       @executor_threads = Concurrent::ThreadPool.new(@number_of_processors, 'Automation::Executor::ThreadPool', 'executor-thread')
@@ -75,7 +75,6 @@ module Automation
           # Get the next available processor id. Will throw an exception if there are no available processors.
           id = @processor_ids.pop(true)
           @logger.info("Launching task '#{task_name}' (affinity=#{id})...")
-          @logger.fine((@cl_propagate + args).inspect)
           exitstatus = Single.launch_process(task, id, *(@cl_propagate + args))
           if stop_on_failure?(group, task) && (exitstatus > 0)
             Executor.raise_error(@task_list, ExecutionError.new("Task '#{task_name}' failed - exit code: #{exitstatus}"))

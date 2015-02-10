@@ -18,7 +18,6 @@ module Automation
     ResultDataType = 'result_data'
     ServiceType = 'service'
     TaskType = 'task'
-    TestType = 'test'
 
     # The Automation kernel.
     include Automation::Kernel
@@ -31,7 +30,7 @@ module Automation
     # @param [String] component the name of the component.
     # @return [Array<String, Boolean>] the component's file, class name and singleton flag (true if singleton, false otherwise).
     def self.get_details(application, mode, type, component, overrides = {})
-      config_manager = Automation.environment.config_manager
+      config_manager = Automation.runtime.config_manager
       # The component can specify an 'is_a' override - which basically means that the framework should look for and
       # load the specified override.
       parts = config_manager["#{type}.#{component}.is_a", default: component].split('.')
@@ -87,7 +86,7 @@ module Automation
     # @param [String] name the name of the component
     # @return [Array<Module>] the list of modules that should be loaded.
     def self.get_extensions(type, name)
-      config_manager = Automation.environment.config_manager
+      config_manager = Automation.runtime.config_manager
       application = config_manager['run.application']
       current_mode = config_manager['run.mode']
       # The name to use for loading extensions.
@@ -141,8 +140,8 @@ module Automation
 
     # New automation component.
     def initialize
-      @config_manager = environment.config_manager
-      @thread_pool = environment.thread_pool
+      @config_manager = runtime.config_manager
+      @thread_pool = runtime.thread_pool
       @logger = Logging::Logger[self]
 
       @component_name = self.class.basename

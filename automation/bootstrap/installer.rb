@@ -24,8 +24,8 @@ module Automation
 
     # New installer.
     def initialize
-      @ruby_bin = environment.ruby_bin
-      @settings = environment.setup_settings
+      @ruby_bin = runtime.ruby_bin
+      @settings = runtime.setup_settings
     end
 
     def run
@@ -44,8 +44,8 @@ module Automation
       # Excluded groups.
       without = []
       # Validate install paths.
-      validate_path(environment.gem_path)
-      validate_path(environment.mysql_dir)
+      validate_path(runtime.gem_path)
+      validate_path(runtime.mysql_dir)
       # Install!
       without << '""' if without.length == 0
       system("#{@ruby_bin}/bundle", 'install', '--local', '--no-cache', '--without', *without)

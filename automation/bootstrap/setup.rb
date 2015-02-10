@@ -15,7 +15,7 @@ require 'tmpdir'
 require 'tempfile'
 require 'yaml'
 
-require_relative 'environment'
+require_relative 'runtime'
 require_relative 'installer'
 require_relative 'kernel'
 require_relative 'user_settings'
@@ -60,10 +60,10 @@ module Automation
       @gem_path = File.join(@settings['setup.gem_path'], ruby_platform)
       @mysql_dir = File.join(FRAMEWORK_ROOT, "#{LIB_DIR}/mysql/#{ruby_platform}")
 
-      environment.save(:ruby_bin, @ruby_bin)
-      environment.save(:gem_path, @gem_path)
-      environment.save(:mysql_dir, @mysql_dir)
-      environment.save(:setup_settings, @settings)
+      runtime.save(:ruby_bin, @ruby_bin)
+      runtime.save(:gem_path, @gem_path)
+      runtime.save(:mysql_dir, @mysql_dir)
+      runtime.save(:setup_settings, @settings)
     end
 
     # Run the setup.

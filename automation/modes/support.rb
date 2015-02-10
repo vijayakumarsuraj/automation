@@ -7,7 +7,7 @@ require 'automation/core/mode'
 
 module Automation
 
-  # Special base class for modes that don't execute tests but are there to provide some supporting function.
+  # Special base class for modes that don't execute tasks but are there to provide some supporting function.
   class SupportMode < Mode
 
     private
@@ -17,14 +17,6 @@ module Automation
       super
 
       @config_manager.add_override_property('run.config_name', self.class.basename)
-    end
-
-    # Overridden to do nothing.
-    def configure_test_pack
-    end
-
-    # Overridden to do nothing.
-    def load_test_pack
     end
 
     # Overridden to do nothing.

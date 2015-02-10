@@ -5,38 +5,41 @@
 
 require 'automation/core/database'
 
-module Automation
+class Automation::WebDatabase < Automation::Database
 
-  # Web database. Stores information relating to how the results data is displayed.
-  class WebDatabase < Database
+  require_relative 'database/models'
 
-    require_relative 'database/models'
+  # Update the database schema to the specified version.
+  #
+  # @param [Integer] version the version to migrate to. If nil, migrates to the latest version.
+  def migrate(version = nil)
+    @logger.fine('Running web migrations...')
+    super(File.join(Automation::FRAMEWORK_ROOT, Automation::FET_DIR, 'web/database/migrations'), version)
+  end
 
-    # Get the user identified by the specified name.
-    #
-    # @param [String] name
-    # @return [Automation::WebDatabase::User]
-    def get_user(name)
-      User.where(username: name).first
-    end
+  # Get the user identified by the specified name.
+  #
+  # @param [String] name
+  # @return [Automation::WebDatabase::User]
+  def get_user(name)
+    User.where(username: name).first
+  end
 
-    # Get the user for the specified id.
-    #
-    # @param [String] user_id
-    # @return [Automation::WebDatabase::User]
-    def find_user(user_id)
-      User.find(user_id)
-    rescue
-      nil
-    end
+  # Get the user for the specified id.
+  #
+  # @param [String] user_id
+  # @return [Automation::WebDatabase::User]
+  def find_user(user_id)
+    User.find(user_id)
+  rescue
+    nil
+  end
 
-    private
+  private
 
-    # The base model for the web database.
-    def base_model
-      BaseModel
-    end
-
+  # The base model for the web database.
+  def base_model
+    BaseModel
   end
 
 end

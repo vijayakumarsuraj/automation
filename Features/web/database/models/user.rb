@@ -5,11 +5,9 @@
 
 require 'openssl'
 
-require_relative '../../database'
-
 module Automation
 
-  class WebDatabase < Database
+  class WebDatabase < Automation::Database
 
     # Represents a user.
     class User < BaseModel

@@ -12,3 +12,6 @@
 
 # User configuration file.
 /Configuration/user.yaml
+
+# Ignore all features.
+/Features/

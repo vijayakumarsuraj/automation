@@ -10,7 +10,7 @@ require 'automation/modes/single'
 
 module Automation
 
-  # Executes tests using Rake.
+  # Executes tasks using Rake.
   class Rake < Runner
 
     private

@@ -34,7 +34,7 @@ module Automation
                          '.log' => 'text/plain', '.txt' => 'text/plain'}
 
     # The automation environment.
-    env = Automation.environment
+    env = Automation.runtime
     config_manager = env.config_manager
 
     # Add support for the partial and render methods in HAML.

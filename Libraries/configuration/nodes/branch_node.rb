@@ -19,6 +19,8 @@ module Configuration
   # This class forms the base on which the SimpleConfiguration class operates.
   class BranchNode < Node
 
+    DEFAULTS_KEY = '__defaults__'
+
     # Creates a new empty branch.
     #
     # @param [String] name the name of this branch.
@@ -65,7 +67,7 @@ module Configuration
     # @param [Object] new_value the new value.
     def []=(key, new_value)
       key = key.to_s unless key.kind_of?(String)
-      if(node = get_child?(key))
+      if (node = get_child?(key))
         # Raise an exception if the child is not a property node.
         raise KeyError.new("Node '#{self.has_name? ? "#{self}." : ''}.#{key}' is not a property") unless node.kind_of?(PropertyNode)
         # Update the property's value.
@@ -125,7 +127,7 @@ module Configuration
     # :create_missing - true if missing nodes should be created.
     # @return [Node, FalseClass] the child node or false if the child does not exist.
     def get_child?(key, overrides = {})
-      defaults = {create_missing: false}
+      defaults = {create_missing: false, context: self}
       overrides = defaults.merge(overrides)
       # If true, create
       create_missing = overrides[:create_missing]
@@ -133,14 +135,22 @@ module Configuration
       key_parts = key.kind_of?(String) ? key.split('.') : key
       # If the length of the key parts is 0, then it is a reference to this node.
       return self if key_parts.length == 0
-      # Get the name to look up in this branch. If a child with this name exists, use it.
-      # If the create_missing flag is false, return false. Otherwise create the node
-      # (and all inner nodes too)
+      # Get the name to look up in this branch.
       name = key_parts.delete_at(0)
+      # If a child with this name exists, use it.
+      # If create_missing is false and '__defaults__' is defined, look for the child under the "default" node specified.
+      # If the create_missing flag is false, return false. If it is true, create the node (and all child nodes too)
       if @children.has_key?(name)
+        node = @children[name]
+      elsif !create_missing && @children.has_key?(DEFAULTS_KEY)
+        defaults_key = get_value(DEFAULTS_KEY, interpolate: false)
+        node = overrides[:context].get_child?(defaults_key, overrides).get_child?(name, overrides)
+      else
+        node = nil
+      end
+      if node
         # If there are more key parts to process, then delegate it to the child node.
         # Otherwise return the node.
-        node = @children[name]
         raise KeyError.new("'#{node}' is not a branch") if key_parts.length > 0 && !node.kind_of?(BranchNode)
         return node.get_child?(key_parts, overrides) if key_parts.length > 0
         return node
@@ -160,7 +170,7 @@ module Configuration
       defaults = {interpolate: true, context: self}
       overrides = defaults.merge(overrides)
       # Get the child represented by the specified key.
-      child = get_child?(key.to_s)
+      child = get_child?(key.to_s, context: overrides[:context])
       # If the child does not exist, and a default value was provided, return that. Otherwise raise an exception.
       unless child
         if overrides.has_key?(:default)

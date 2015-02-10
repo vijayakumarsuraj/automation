@@ -48,7 +48,7 @@ module Automation
       @content[:header_crumbs][:test] = {display: test_name}
 
       run_config = get_run_config(application_name, config_name)
-      tests = ResultsDatabase::Test.where(test_name: test_name, run_config_id: run_config)
+      tests = TestDatabase::Test.where(test_name: test_name, run_config_id: run_config)
 
       @content[:test] = tests.first
       @content[:run_config] = run_config

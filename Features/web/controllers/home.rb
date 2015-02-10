@@ -14,12 +14,13 @@ module Automation
       @path_info = request.path_info
 
       @logger = Logging::Logger['Automation::WebApp']
-      @config_manager = environment.config_manager
-      @results_archive = environment.results_archive
-      @databases = environment.databases
+      @config_manager = runtime.config_manager
+      @results_archive = runtime.results_archive
+      @databases = runtime.databases
 
       @results_database = @databases.results_database
       @web_database = @databases['web']
+      @test_database = @databases['test']
 
       @link_prefix = @config_manager['web.link_prefix', default: '/']
       @link_prefix = "/#{@link_prefix}" unless @link_prefix.start_with?('/')

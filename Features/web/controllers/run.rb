@@ -28,7 +28,7 @@ module Automation
       @content[:header_crumbs][:run_config] = {display: "#{application_name} -- #{config_name}", href: link('config', application_name, config_name, 'index.html')}
       @content[:header_crumbs][:run] = {display: run_name}
 
-      @content[:previous_run_result] = @results_database.get_analysed_against_run_result(run_result)
+      @content[:previous_run_result] = @test_database.get_analysed_against_run_result(run_result)
       @content[:run_result] = run_result
       haml :"run/#{page_name}", format: :html5
     end
@@ -88,7 +88,7 @@ module Automation
         raise WebError.new("Sorry, but we couldn't find the required run results (#{run_name})!") if this_run_result.nil?
 
         # Previous run result.
-        previous_run_result = @results_database.get_analysed_against_run_result(this_run_result)
+        previous_run_result = @test_database.get_analysed_against_run_result(this_run_result)
         raise WebError.new("Sorry, but we couldn't find any previous run results (#{run_name})!") if previous_run_result.nil?
         previous_run_name = previous_run_result.run_name
 
@@ -130,7 +130,7 @@ module Automation
       test_names = []
       test_results = []
       params['values'].split(',').each do |id|
-        test_result = @results_database.find_test_result(id)
+        test_result = @test_database.find_test_result(id)
         test_names << (test_result.nil? ? id : test_result.test.test_name)
         test_results << test_result
       end

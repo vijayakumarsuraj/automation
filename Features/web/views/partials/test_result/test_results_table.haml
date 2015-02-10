@@ -68,7 +68,7 @@
           %td
       %tbody
         - test_results.each do |test_result|
-          - if test_result.kind_of?(Automation::ResultsDatabase::Test)
+          - if test_result.kind_of?(Automation::TestDatabase::Test)
             - args = {locals: {test: test_result, run_config: run_config}}
             = scoped_partial('test/test', application_name, args)
           - else

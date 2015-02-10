@@ -31,11 +31,12 @@ module Automation
     # @param [Array] args optional command line arguments.
     # @return [Integer] the return code of the specified task.
     def self.launch_process(task, affinity, *args)
-      application = Automation.environment.config_manager['run.application']
-      ruby_bin = Automation.environment.ruby_bin
+      application = Automation.runtime.config_manager['run.application']
+      ruby_bin = Automation.runtime.ruby_bin
       ruby = Automation::Converter.to_windows_path(File.join(ruby_bin, 'ruby'))
       main_rb = File.join(Automation::FRAMEWORK_ROOT, 'main.rb')
       args = [main_rb, "#{application}-single", '--task', task] + args
+      Logging::Logger[self].fine(args.inspect)
       if affinity >= 0
         # An affinity was specified, launch the process using the 'start' command and the /affinity option.
         # The affinity also needs to be converted into a hexadecimal mask.
@@ -68,11 +69,6 @@ module Automation
       super
       #
       option_task
-    end
-
-    # Overridden to return the name of the test when the task is 'test_runner'. Otherwise use the default behaviour.
-    def log_file_name
-      @task_id == 'test_runner' ? "#{@test_name}" : @task_id
     end
 
     # The following steps are carried out (in no particular order):

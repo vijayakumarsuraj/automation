@@ -9,18 +9,18 @@ module Automation
 
     # Get the text to be displayed for a particular change.
     #
-    # @param [Automation::Change] change the change.
+    # @param [Automation::Test::Change] change the change.
     def change_text(change)
       case (change)
-        when Automation::Change::TestAdded
+        when Automation::Test::Change::TestAdded
           'added'
-        when Automation::Change::TestRemoved
+        when Automation::Test::Change::TestRemoved
           'removed'
-        when Automation::Change::TestStartedFailing
+        when Automation::Test::Change::TestStartedFailing
           'started failing'
-        when Automation::Change::TestStartedPassing
+        when Automation::Test::Change::TestStartedPassing
           'started passing'
-        when Automation::Change::TestChangedFailure
+        when Automation::Test::Change::TestChangedFailure
           'new failure'
         else
           'unknown'
@@ -29,7 +29,7 @@ module Automation
 
     # Get a summary string for the date times of the specified entity.
     #
-    # @param [Automation::ResultsDatabase::TestResult, Automation::ResultsDatabase::RunResult] entity
+    # @param [Automation::TestDatabase::TestResult, Automation::ResultsDatabase::RunResult] entity
     def entity_date_time_summary(entity, overrides = {})
       defaults = {time_format: :time, include_end_time: true, include_duration: true}
       overrides = defaults.merge(overrides)
@@ -59,7 +59,7 @@ module Automation
 
     # Get the result of the specified entity
     #
-    # @param [Automation::ResultsDatabase::RunResult, Automation::ResultsDatabase::TestResult] entity
+    # @param [Automation::ResultsDatabase::RunResult, Automation::TestDatabase::TestResult] entity
     def entity_result(entity)
       weight = entity.result
       weight.nil? ? Automation::Result::Unknown : weight
@@ -67,7 +67,7 @@ module Automation
 
     # Get the status of the specified entity
     #
-    # @param [Automation::ResultsDatabase::RunResult, Automation::ResultsDatabase::TestResult] entity
+    # @param [Automation::ResultsDatabase::RunResult, Automation::TestDatabase::TestResult] entity
     def entity_status(entity)
       value = entity.status
       value.nil? ? Automation::Status::Complete : value

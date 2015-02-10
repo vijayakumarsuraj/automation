@@ -56,7 +56,7 @@ module Automation
     # @param [Automation::ResultsDatabase::RunResult] run_result the run result.
     # @return [String] the HTML fragment.
     def run_result_status_test_count_html(run_result)
-      pass, fail, ignored = @results_database.get_run_result_test_counts(run_result)
+      pass, fail, ignored = @test_database.get_run_result_test_counts(run_result)
       total = pass + fail
       pass_style = result_style(Automation::Result::Pass)
       fail_style = result_style(Automation::Result::Fail)
@@ -101,7 +101,7 @@ module Automation
     # @param [Automation::ResultsDatabase::RunResult] run_result the run result
     # @return [String] the HTML fragment.
     def run_result_summary_test_count_html(run_result)
-      pass, fail, ignored = @results_database.get_run_result_test_counts(run_result)
+      pass, fail, ignored = @test_database.get_run_result_test_counts(run_result)
       total = pass + fail
       pass_percentage = total > 0 ? '%.2f%' % (Float(pass) / Float(total) * 100.0) : 'NaN'
       pass_style = result_style(Automation::Result::Pass)

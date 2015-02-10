@@ -5,7 +5,6 @@
 
 require 'automation/core/component'
 
-require 'automation/enums/change'
 require 'automation/enums/result'
 require 'automation/enums/status'
 
@@ -32,7 +31,7 @@ module Automation
       @raise_exceptions = true
       @persist = true
 
-      @databases = environment.databases
+      @databases = runtime.databases
       @results_database = @databases.results_database
     end
 

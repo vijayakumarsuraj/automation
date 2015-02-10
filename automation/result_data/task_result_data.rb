@@ -16,7 +16,7 @@ module Automation
     # @param [String] task_name the name of the task.
     # @param [Boolean] create if true, the zip file is created.
     def initialize(directory, task_name, create = true)
-      config_manager = environment.config_manager
+      config_manager = runtime.config_manager
       zip_file_name = config_manager['task.results.zip_file_name', parameters: {'task.name' => task_name}]
       zip_path = File.join(directory, zip_file_name)
 

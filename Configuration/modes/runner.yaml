@@ -2,7 +2,7 @@
 
 mode:
   runner:
-    execute: ["setup", "tests", "teardown"]
+    execute: ["setup", "targets", "teardown"]
     target: "teardown"
 
 # Task group properties.
@@ -10,12 +10,12 @@ task_groups:
   setup:
     tasks: []
     stop_on_failure: true
-  tests:
+  targets:
     depends_on: ["setup"]
     tasks: []
   teardown:
-    depends_on: ["tests", "setup"]
-    tasks: ["finaliser", "analyser"]
+    depends_on: ["targets", "setup"]
+    tasks: ["finaliser"]
 
 # Only runners will migrate the database.
 # This will therefore only happen once every run.

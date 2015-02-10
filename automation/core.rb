@@ -37,7 +37,7 @@ require 'concurrent/thread_pool'
 
 module Automation
 
-  FRAMEWORK_NAME = 'Automation Test Framework'
+  FRAMEWORK_NAME = 'Automation Framework'
   FRAMEWORK_MAJOR_VERSION = 4
   FRAMEWORK_MINOR_VERSION = 1
   FRAMEWORK_TITLE = "#{FRAMEWORK_NAME} v#{FRAMEWORK_MAJOR_VERSION}.#{FRAMEWORK_MINOR_VERSION}"
@@ -53,12 +53,12 @@ module Automation
     end
     # Starts the framework's thread pool.
     thread_pool = Concurrent::ThreadPool.new(4, 'Automation::ThreadPool')
-    environment.save(:thread_pool, thread_pool)
+    runtime.save(:thread_pool, thread_pool)
     # Other environment variables.
-    environment.save(:number_of_processors, [ENV['NUMBER_OF_PROCESSORS'].to_i, 1].max)
-    environment.save(:logger, Logging::Logger['Automation'])
-    environment.save(:hostname, Socket.gethostbyname('localhost').first)
-    environment.save(:databases, Automation::Databases.new)
+    runtime.save(:number_of_processors, [ENV['NUMBER_OF_PROCESSORS'].to_i, 1].max)
+    runtime.save(:logger, Logging::Logger['Automation'])
+    runtime.save(:hostname, Socket.gethostbyname('localhost').first)
+    runtime.save(:databases, Automation::Databases.new)
     # Standard properties.
     add_standard_property('pwd', FRAMEWORK_PWD)
     add_standard_property('root_directory', FRAMEWORK_ROOT)
@@ -70,7 +70,7 @@ module Automation
     add_override_property('run.mode', mode)
     add_override_property('run.pid', $$)
     # Environment singleton store.
-    environment.save(:loaded_components, {})
+    runtime.save(:loaded_components, {})
   end
 
   # Expands the specified application into a full application name.
@@ -106,7 +106,7 @@ module Automation
         init_file = "#{feature}/init.rb"
         next unless File.exist?(init_file)
 
-        environment.logger.debug("Initialising feature '#{feature}'...")
+        runtime.logger.debug("Initialising feature '#{feature}'...")
         require init_file
       end
     end
@@ -124,7 +124,7 @@ module Automation
   # @return [Array<String>] the list of supported modes.
   def self.supported_modes
     modes = []
-    config_manager = environment.config_manager
+    config_manager = runtime.config_manager
     config_manager.get_child?('mode').each_child { |child| modes << [child.name, child.get_value('description')] }
     modes
   end
@@ -133,11 +133,11 @@ module Automation
 
   # Configures the framework's logging.
   def self.configure_logging
-    config_manager = environment.config_manager
+    config_manager = runtime.config_manager
 
     Logging.configure do
       pre_config do
-        levels %w[TRACE FINER FINE DEBUG CONF INFO TEST_INFO WARN ERROR FATAL]
+        levels %w[TRACE FINER FINE DEBUG CONF INFO WARN ERROR FATAL]
       end
 
       logger('root') do
@@ -160,15 +160,15 @@ module Automation
     config_manager.instance_variable_set(:@logger, Logging::Logger['Automation::ConfigManager'])
   end
 
-  # Get the automation environment.
-  def self.environment
-    Environment.instance
+  # Get the automation runtime.
+  def self.runtime
+    Runtime.instance
   end
 
   # Loads the default configuration file.
   def self.load_default_configuration
     FileUtils.cd(FRAMEWORK_ROOT) do
-      config_manager = environment.config_manager
+      config_manager = runtime.config_manager
       config_manager.load_configuration('default', 'Configuration/default.yaml')
       config_manager.load_configuration('feature', *Dir.glob("Configuration/#{Automation::FET_DIR}/*.yaml"))
       config_manager.add_configuration('application-default', Configuration::SimpleConfiguration.new)
@@ -188,7 +188,7 @@ module Automation
   # Loads all application / mode configuration files.
   def self.load_configurations(application, mode)
     FileUtils.cd(FRAMEWORK_ROOT) do
-      config_manager = environment.config_manager
+      config_manager = runtime.config_manager
       config_manager.load_configuration('application-default', "#{APP_DIR}/#{application}/Configuration/default.yaml")
       # Load all mode and parent mode configurations.
       mode_names = Mode.mode_names(application, mode)
@@ -199,22 +199,40 @@ module Automation
 
 end
 
+module Kernel
+
+  REQUIRE_HOOKS = {}
+
+  # Registers a callback that should be executed when the specified file is required. The callback will run only if the call to
+  # require returns a true (indicating that it was actually "required").
+  #
+  # @param [String] file
+  # @param [Proc] action
+  def on_require(file, &action)
+    REQUIRE_HOOKS[file] = [] unless REQUIRE_HOOKS.has_key?(file)
+    REQUIRE_HOOKS[file] << action
+  end
+
+  # Provides the ability to add callback hooks whenever a file is required.
+  # Callback are executed only if the file is actually "required".
+  def require_with_framework(file)
+    if require_without_framework(file)
+      REQUIRE_HOOKS[file].each { |callback| callback.call } if REQUIRE_HOOKS.has_key?(file)
+    end
+  end
+
+  alias_method_chain :require, :framework
+
+end
+
 require 'automation/error'
 
-require 'automation/bootstrap/config_manager'
+require 'automation/config_manager'
 
 require 'automation/core/component'
-require 'automation/core/assertion'
 require 'automation/core/databases'
 require 'automation/core/task'
 require 'automation/core/mode'
-require 'automation/core/test'
-require 'automation/core/test_pack'
-
-require 'automation/assertions/boolean'
-require 'automation/assertions/file'
-require 'automation/assertions/null'
-require 'automation/assertions/operator'
 
 require 'automation/result_data/run_result_data'
 require 'automation/result_data/task_result_data'
