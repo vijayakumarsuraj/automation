@@ -5,9 +5,7 @@
 
 - if run_result && !@header[:header_links_disabled]
   - run_name = run_result.run_name
-  - header_links = {}
-  - header_links['index.html'] = {display: 'Results', href: link('run', run_name, 'index.html')}
-  - header_links['summary.html'] = {display: 'Summary', href: link('run', run_name, 'summary.html')}
+  - header_links = run_result_header_links(run_result)
   .header_links
     - header_links.each_pair do |name, link|
       - if name.eql?(active_link)

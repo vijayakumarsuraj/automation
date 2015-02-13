@@ -5,6 +5,18 @@
 div.content {
     clear: both;
     position: relative;
+    height: 100%;
+}
+
+/* i frames. */
+.iframe {
+    display: block;
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 100%;
+}
+iframe {
+    border: 0;
 }
 
 /* Align images according to the font of the containing element. */

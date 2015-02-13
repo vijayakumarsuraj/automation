@@ -6,6 +6,11 @@
 @import "report/header.css";
 @import "report/content.css";
 
+/* Full document. */
+html,body {
+    height: 100%;
+}
+
 /* Full body */
 body {
     font-family: "Helvetica Neue", "Arial", sans-serif;

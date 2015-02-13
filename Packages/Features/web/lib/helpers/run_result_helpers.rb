@@ -31,6 +31,14 @@ module Automation
       @test_database.get_test_results_with_change(run_result, change)
     end
 
+    # Generates the header links for the given run result.
+    def run_result_header_links(run_result)
+      header_links = {}
+      header_links['index.html'] = {display: 'Results', href: link('run', run_result.run_name, 'index.html')}
+      header_links['summary.html'] = {display: 'Summary', href: link('run', run_result.run_name, 'summary.html')}
+      header_links
+    end
+
     # Returns an array of task results sorted by their result and name.
     #
     # @param [Automation::ResultsDatabase::RunResult] run_result

@@ -45,3 +45,9 @@ task:
   analyser:
     require_file: "test/tasks/analyser"
     class_name: "Automation::Test::Analyser"
+
+web:
+  view:
+    partials:
+      task_result:
+        dont_render+: ["test_runner"]

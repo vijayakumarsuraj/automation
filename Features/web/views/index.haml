@@ -1,9 +1,0 @@
--# Home page for the test framework web application.
--# Shows all results and the link to them.
-.header
-  = scoped_partial('header', nil)
-.content
-  - @content[:run_configs].each do |run_config|
-    - @content[:run_config] = run_config
-    - args = {locals: {show_full_data: false}}
-    = scoped_partial('config_results', nil, args)

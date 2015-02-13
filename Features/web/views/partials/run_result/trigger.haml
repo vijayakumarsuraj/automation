@@ -1,7 +1,0 @@
--# Renders the trigger information span.
-
-- run_result = @content[:run_result]
-
-%strong Trigger :
-= run_result.user.nil? ? 'Unknown' : run_result.user
-%strong= run_result.official ? '[Official]' : '[Personal]'

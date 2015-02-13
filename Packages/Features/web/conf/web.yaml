@@ -24,7 +24,7 @@ web:
       summary_page_length: 5
     partials:
       task_result:
-        dont_render: []
+        dont_render+: []
 
 mode:
   web:

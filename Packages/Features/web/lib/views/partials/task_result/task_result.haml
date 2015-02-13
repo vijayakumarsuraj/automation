@@ -4,8 +4,7 @@
 
 - run_result = task_result.run_result
 - task = task_result.task
-- task_name = task_result.properties['display_name']
-- task_name = task.task_name if task_name.nil?
+- task_name = task.task_name
 - run_name = run_result.run_name
 - run_config = run_result.run_config
 - application_name = run_config.application.application_name

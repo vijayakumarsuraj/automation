@@ -23,7 +23,7 @@ module Automation
 
     # Defines the files all packages MUST have.
     def define
-      lib('lib', '*', 'package.rb')
+      lib('lib', '{*,.*}', '{package.rb,.,..}')
       conf('conf', "#{@name}.yaml")
 
       super

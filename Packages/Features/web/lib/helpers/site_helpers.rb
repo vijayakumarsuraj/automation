@@ -154,7 +154,7 @@ module Automation
     def scoped_config(application, key, default = nil)
       app_key = "web.#{application}.view.#{key}"
       default_key = "web.view.#{key}"
-      @config_manager.has_property?(app_key) ? @config_manager[app_key] : @config_manager[default_key, default: nil]
+      @config_manager.has_property?(app_key) ? @config_manager[app_key] : @config_manager[default_key, default: default]
     end
 
     # Special partial implementation that looks for application specific partials also.

@@ -38,7 +38,18 @@ module Configuration
 
     # Overridden to copy all properties from the node being merged in.
     def merge!(other)
-      @value = other.value
+      if is_additive? || other.is_additive?
+        @value += other.value
+      elsif is_subtractive? || other.is_subtractive?
+        @value -= other.value
+      else
+        @value = other.value
+      end
+    end
+
+    # Overridden to handle additive (+) properties.
+    def name
+      (is_additive? || is_subtractive?) ? @name[0..-2] : @name
     end
 
     # Returns the content of this property node. Useful for debugging.
@@ -84,6 +95,18 @@ module Configuration
     # @return [Boolean] true if interpolating, false otherwise.
     def interpolating?
       @interpolating
+    end
+
+    # Check if this is an additive property.
+    # Additive properties are added using '+'.
+    def is_additive?
+      @name.end_with?('+')
+    end
+
+    # Check if this is an subtractive property.
+    # Subtractive properties are added using '-'.
+    def is_subtractive?
+      @name.end_with?('-')
     end
 
     # Mark this property to indicate that interpolation has started.

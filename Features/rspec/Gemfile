@@ -1,6 +1,0 @@
-# Gemfile for the 'rspec' feature
-
-# For automation using RSpec.
-group :rspec do
-  gem 'rspec'
-end
