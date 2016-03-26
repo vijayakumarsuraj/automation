@@ -124,6 +124,8 @@ module Automation
 
         @logger.debug("Deleting #{files.length} items from '#{from}'")
         files.each do |file|
+          next if file.eql?('.') || file.eql?('..')
+
           @logger.fine("Deleting '#{file}'...")
           FileUtils.rm_r(file)
         end

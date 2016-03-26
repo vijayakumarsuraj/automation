@@ -15,6 +15,7 @@ module Automation::Web
     # Defines this package.
     def define
       bin('bin', 'web.bat')
+      conf_mode('conf/modes', 'web.yaml')
 
       super
     end

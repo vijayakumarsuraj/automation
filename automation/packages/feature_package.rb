@@ -29,13 +29,20 @@ module Automation
       super
     end
 
-    # Define a file for the framework's 'Configuration' directory.
+    # Define a file for the framework's Configuration/modes directory.
     #
     # @param [String] package_dir
     # @param [String] include
-    # @param [String] exclude
-    def conf(package_dir, include, exclude = '')
-      files(package_dir, "Configuration/#{Automation::FET_DIR}", include, exclude)
+    def conf_mode(package_dir, include)
+      files(package_dir, 'Configuration/modes', include, '')
+    end
+
+    # Define a file for the framework's 'Configuration/Features' directory.
+    #
+    # @param [String] package_dir
+    # @param [String] include
+    def conf(package_dir, include)
+      files(package_dir, "Configuration/#{Automation::FET_DIR}", include, '')
     end
 
     # Define feature code files.

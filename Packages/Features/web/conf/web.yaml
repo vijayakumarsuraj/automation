@@ -1,4 +1,4 @@
-# The configuration file for the 'web' mode.
+# The configuration file for the 'web' feature.
 
 web:
   directory: "${features_directory}/web"
@@ -25,17 +25,3 @@ web:
     partials:
       task_result:
         dont_render+: []
-
-mode:
-  web:
-    require_file: "web/runner"
-    description: "Web server for hosting test results."
-
-# The web database stores information needed for the WebApp Sinatra application.
-database:
-  results_database:
-    migrate: true
-  web_database:
-    require_file: "web/database"
-    singleton: true
-    __defaults__: database.results_database
