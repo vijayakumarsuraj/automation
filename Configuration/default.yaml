@@ -25,28 +25,12 @@ data:
 temp:
   directory: "${data.directory}/Temp"
 
-# The directory where the test packs are located.
-test_packs:
-  directory: "${root_directory}/Test Packs"
-# The directory that contains the test pack files.
-test_pack:
-  directory: "${test_packs.directory}/${test_pack.name}"
-  libraries_directory: "${test_pack.directory}/Libraries"
-  temp_directory: "${test_pack.directory}/Temp"
-  tests_directory: "${test_pack.directory}/Tests"
-  test_directory: "${test_pack.tests_directory}/${test.name}"
-  test_data_directory: "${test_pack.test_directory}/Data"
-  test_file: "${test_pack.test_directory}/${test.name}.rb"
-  # The prefix for the class names of this test pack.
-  test_module: ""
-
 # The directory that contains all result files.
 results:
   archive: "${data.directory}/Archive/Results"
 
 # Run configurations.
 run:
-  config_name: "${test_pack.name}"
   name: "${run.config_name}_${run.start_date_time}"
   type: "default"
   working:
@@ -59,13 +43,6 @@ run:
   trigger:
     user:
     official_users: ["Schedule Trigger", "Subversion"]
-
-test:
-  heartbeat:
-    # The frequency with which a test will send heartbeat messages.
-    frequency: 10 # 10s
-  working:
-    directory: "${run.working.directory}/${test.name}"
 
 # Mode properties.
 mode:
@@ -85,8 +62,6 @@ database:
     singleton: true
 
 result_data:
-  test_result_data:
-    empty:
   run_result_data:
     empty:
   result_archive:
@@ -98,10 +73,6 @@ task:
   results:
     zip_file_name: "${task.name}.zip"
 
-  test_runner:
-    depends_on: []
-    observers:
-      test_monitor: true
   finaliser:
     depends_on: []
   analyser:

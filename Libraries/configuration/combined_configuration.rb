@@ -31,17 +31,28 @@ module Configuration
       end
     end
 
-    # Adds a configuration to this configuration.
+    # Adds a child configuration to this configuration.
     #
     # @param [String] name a unique identifier for this configuration.
     # @param [SimpleConfiguration] configuration the configuration to add.
-    # @param [Integer] position the position where the configuration should be added. Default is at the end.
-    def add_configuration(name, configuration, position = -1)
+    # @param [Integer, String] position the position where the configuration should be added.
+    #   An integer value specifies the index to add the configuration to.
+    #   A string value specifies identifies the configuration before which this configuration should be added.
+    #   If not specified or if an invalid value is specified, adds the configuration at the end.
+    def add_configuration(name, configuration, position = nil)
       raise KeyError.new("Configuration '#{name}' already exists") if @configurations.has_key?(name)
+      # If position is a String, find the configuration with the specified name. And use it's position.
+      position = @configuration_names.index(position) if position.kind_of?(String)
+      # Default to -1.
+      position = -1 if position.nil?
+      # Save the configuration.
       @configurations[name] = configuration
       @configuration_names.insert(position, name)
+      # Add a listener.
       configuration.add_listener(@listener)
-      merge!(configuration)
+      # Clear the current configuration tree and then refresh the whole tree.
+      clear
+      refresh
     end
 
     # Get the configuration identified by the specified name.

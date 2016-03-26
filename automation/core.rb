@@ -22,7 +22,7 @@ require 'facets/enumerable/map_with_index'
 require 'facets/file/write'
 require 'facets/module/alias_method_chain'
 require 'facets/module/basename'
-require 'facets/numeric/round'
+require 'facets/math/round'
 require 'facets/kernel/constant'
 require 'facets/string/camelcase'
 require 'facets/string/snakecase'
@@ -135,29 +135,18 @@ module Automation
   def self.configure_logging
     config_manager = runtime.config_manager
 
-    Logging.configure do
-      pre_config do
-        levels %w[TRACE FINER FINE DEBUG CONF INFO WARN ERROR FATAL]
-      end
+    Logging.init :trace, :finer, :fine, :debug, :conf, :info, :warn, :error, :fatal
+    Logging.logger.root.level = :all
+    Logging.logger.root.appenders = Logging.appenders.stdout(
+        'stdout',
+        level: config_manager['logging.console.level'],
+        layout: Logging.layouts.pattern(
+            pattern: config_manager['logging.console.pattern'],
+            date_pattern: config_manager['logging.console.date_pattern']))
 
-      logger('root') do
-        level :all
-        appenders 'stdout'
-      end
-
-      appender('stdout') do
-        level config_manager['logging.console.level']
-        type 'Stdout'
-        layout do
-          type 'Pattern'
-          pattern config_manager['logging.console.pattern']
-          date_pattern config_manager['logging.console.date_pattern']
-        end
-      end
-    end
     # Initialise...
     Logging.ndc.push('main-thread')
-    config_manager.instance_variable_set(:@logger, Logging::Logger['Automation::ConfigManager'])
+    config_manager.instance_variable_set(:@logger, Logging.logger['Automation::ConfigManager'])
   end
 
   # Get the automation runtime.
@@ -171,13 +160,12 @@ module Automation
       config_manager = runtime.config_manager
       config_manager.load_configuration('default', 'Configuration/default.yaml')
       config_manager.load_configuration('feature', *Dir.glob("Configuration/#{Automation::FET_DIR}/*.yaml"))
-      config_manager.add_configuration('application-default', Configuration::SimpleConfiguration.new)
       config_manager.add_configuration('mode', Configuration::SimpleConfiguration.new)
+      config_manager.add_configuration('default-end', Configuration::SimpleConfiguration.new) # Configurations should not be added here.
+      config_manager.add_configuration('application-default', Configuration::SimpleConfiguration.new)
       config_manager.add_configuration('application-mode', Configuration::SimpleConfiguration.new)
-      config_manager.add_configuration('application-test', Configuration::SimpleConfiguration.new)
-      config_manager.add_configuration('test-pack-default', Configuration::SimpleConfiguration.new)
-      config_manager.add_configuration('test-pack-mode', Configuration::SimpleConfiguration.new)
-      config_manager.add_configuration('test-default', Configuration::SimpleConfiguration.new)
+      config_manager.add_configuration('application-end', Configuration::SimpleConfiguration.new) # Configurations should not be added here.
+      config_manager.add_configuration('feature-end', Configuration::SimpleConfiguration.new) # Configurations should not be added here.
       config_manager.add_configuration('config', Configuration::SimpleConfiguration.new)
       config_manager.load_configuration('user', 'Configuration/user.yaml')
       config_manager.add_configuration('command-line', Configuration::SimpleConfiguration.new)

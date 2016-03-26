@@ -152,6 +152,11 @@ module Automation::Test
 
     # Loads all test pack specific configuration files.
     def load_configurations
+      @config_manager.add_configuration('application-test', Configuration::SimpleConfiguration.new, 'application-end')
+      @config_manager.add_configuration('test-pack-default', Configuration::SimpleConfiguration.new, 'feature-end')
+      @config_manager.add_configuration('test-pack-mode', Configuration::SimpleConfiguration.new, 'feature-end')
+      @config_manager.add_configuration('test-default', Configuration::SimpleConfiguration.new, 'feature-end')
+
       load_test_application_configurations
       load_test_pack_configurations
     end

@@ -5,12 +5,38 @@ package:
     require_file: "test/packages/test_pack_package"
     class_name: "Automation::Test::TestPackPackage"
 
+# The directory where the test packs are located.
+test_packs:
+  directory: "${root_directory}/Test Packs"
+# The directory that contains the test pack files.
+test_pack:
+  directory: "${test_packs.directory}/${test_pack.name}"
+  libraries_directory: "${test_pack.directory}/Libraries"
+  temp_directory: "${test_pack.directory}/Temp"
+  tests_directory: "${test_pack.directory}/Tests"
+  test_directory: "${test_pack.tests_directory}/${test.name}"
+  test_data_directory: "${test_pack.test_directory}/Data"
+  test_file: "${test_pack.test_directory}/${test.name}.rb"
+  # The prefix for the class names of this test pack.
+  test_module: ""
+
+test:
+  heartbeat:
+    # The frequency with which a test will send heartbeat messages.
+    frequency: 10 # 10s
+  working:
+    directory: "${run.working.directory}/${test.name}"
+
 # The test database stores information about tests.
 database:
   test_database:
     require_file: "test/database"
     singleton: true
-    __defaults__: database.results_database
+    __defaults__: "database.results_database"
+
+result_data:
+  test_result_data:
+    empty:
 
 # Adds the 'test-monitor' service.
 manager:
@@ -42,6 +68,9 @@ task:
   test_runner:
     require_file: "test/tasks/test_runner"
     class_name: "Automation::Test::TestRunner"
+    depends_on: []
+    observers:
+      test_monitor: true
   analyser:
     require_file: "test/tasks/analyser"
     class_name: "Automation::Test::Analyser"
