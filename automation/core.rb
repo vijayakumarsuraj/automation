@@ -125,7 +125,9 @@ module Automation
   def self.supported_modes
     modes = []
     config_manager = runtime.config_manager
-    config_manager.get_child?('mode').each_child { |child| modes << [child.name, child.get_value('description')] }
+    config_manager.get_child?('mode').each_child do |child|
+      modes << [child.name, child.get_value('description')] unless child.name.eql?('observers')
+    end
     modes
   end
 

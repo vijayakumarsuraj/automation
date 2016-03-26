@@ -25,3 +25,8 @@ web:
     partials:
       task_result:
         dont_render+: []
+
+mode:
+  web:
+    require_file: "web/runner"
+    description: "Web server for hosting test results."

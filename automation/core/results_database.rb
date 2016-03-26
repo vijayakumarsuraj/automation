@@ -218,34 +218,34 @@ module Automation
 
 end
 
-SQL_TABLE_PREFIX = Automation::ResultsDatabase::BaseModel.table_name_prefix
+RESULTS_DATABASE_TABLE_PREFIX = Automation::ResultsDatabase::BaseModel.table_name_prefix
 
 #
 # Miscellaneous clean-up queries.
 #
 SQL_DELETE_RUN_CONFIGS = <<-SQL
 DELETE
-FROM #{SQL_TABLE_PREFIX}run_configs
+FROM #{RESULTS_DATABASE_TABLE_PREFIX}run_configs
 WHERE id NOT IN (
   SELECT DISTINCT(run_config_id)
-  FROM run_results
+  FROM #{RESULTS_DATABASE_TABLE_PREFIX}run_results
 )
 SQL
 
 SQL_DELETE_TASKS = <<-SQL
 DELETE
-FROM #{SQL_TABLE_PREFIX}tasks
+FROM #{RESULTS_DATABASE_TABLE_PREFIX}tasks
 WHERE id NOT IN (
   SELECT DISTINCT(task_id)
-  FROM task_results
+  FROM #{RESULTS_DATABASE_TABLE_PREFIX}task_results
 )
 SQL
 
 SQL_DELETE_APPLICATIONS = <<-SQL
 DELETE
-FROM #{SQL_TABLE_PREFIX}applications
+FROM #{RESULTS_DATABASE_TABLE_PREFIX}applications
 WHERE id NOT IN (
   SELECT DISTINCT(application_id)
-  FROM run_configs
+  FROM #{RESULTS_DATABASE_TABLE_PREFIX}run_configs
 )
 SQL
